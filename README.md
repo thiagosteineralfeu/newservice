@@ -68,3 +68,4 @@ To set up a CI environment, consult the [Setting up Continuous Integration][] pa
 [Setting up Continuous Integration]: https://jhipster.github.io/documentation-archive/v4.0.2/setting-up-ci/
 
 
+# newservice
