@@ -23,6 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Base64Utils;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -42,8 +43,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 public class ReviewVectorResourceIntTest {
 
-    private static final String DEFAULT_VECTOR = "AAAAAAAAAA";
-    private static final String UPDATED_VECTOR = "BBBBBBBBBB";
+    private static final String DEFAULT_VECTOR = "aaaaaaaaaa";
+    private static final String UPDATED_VECTOR = "bbbbbbbbbb";
 
     @Autowired
     private ReviewVectorRepository reviewVectorRepository;

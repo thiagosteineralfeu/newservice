@@ -5,12 +5,14 @@
         .module('myserviceApp')
         .controller('ReviewVectorController', ReviewVectorController);
 
-    ReviewVectorController.$inject = ['ReviewVector'];
+    ReviewVectorController.$inject = ['DataUtils', 'ReviewVector'];
 
-    function ReviewVectorController(ReviewVector) {
+    function ReviewVectorController(DataUtils, ReviewVector) {
         var vm = this;
 
         vm.reviewVectors = [];
+        vm.openFile = DataUtils.openFile;
+        vm.byteSize = DataUtils.byteSize;
 
         loadAll();
 

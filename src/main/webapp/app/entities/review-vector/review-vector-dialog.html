@@ -15,9 +15,8 @@
         </div>
         <div class="form-group">
             <label class="control-label" for="field_vector">Vector</label>
-            <input type="text" class="form-control" name="vector" id="field_vector"
-                    ng-model="vm.reviewVector.vector"
-                    required/>
+                <textarea class="form-control" name="vector" id="field_vector"
+                    ng-model="vm.reviewVector.vector" required></textarea>
             <div ng-show="editForm.vector.$invalid">
                 <p class="help-block"
                     ng-show="editForm.vector.$error.required">

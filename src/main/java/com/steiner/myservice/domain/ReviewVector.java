@@ -13,9 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
  * A ReviewVector.
  */
 @Entity
+@Transactional
 @Table(name = "review_vector")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Transactional
 public class ReviewVector implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -26,6 +26,7 @@ public class ReviewVector implements Serializable {
     private Long id;
 
     @NotNull
+    @Lob
     @Column(name = "vector", nullable = false)
     private String vector;
 

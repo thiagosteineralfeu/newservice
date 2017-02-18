@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
+import javax.persistence.Lob;
 
 /**
  * A DTO for the ReviewVector entity.
@@ -15,6 +16,7 @@ public class ReviewVectorDTO implements Serializable {
     private Long id;
 
     @NotNull
+    @Lob
     private String vector;
 
     private Long reviewId;

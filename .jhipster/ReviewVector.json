@@ -23,7 +23,8 @@
     "fields": [
         {
             "fieldName": "vector",
-            "fieldType": "String",
+            "fieldType": "byte[]",
+            "fieldTypeBlobContent": "text",
             "fieldValidateRules": [
                 "required"
             ]
