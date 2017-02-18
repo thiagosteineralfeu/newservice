@@ -99,7 +99,7 @@ public class ReviewService {
 
         mystring = mystring.toLowerCase().trim();
 
-        mystring = Jsoup.parse(mystring.toLowerCase()).text();//Remove html
+        //mystring = Jsoup.parse(mystring.toLowerCase()).text();//Remove html
         //Tratamos alguns casos de contração. 
         //Casos com 'd e 's como possuem múltiplos significados serão tratados removendo o apóstrofo
         mystring = mystring.replaceAll("can't", "can not");
@@ -169,8 +169,9 @@ public class ReviewService {
         String mystring;
         Pattern myPatterCompileColumnCatcher = Pattern.compile(".*?\\t.*?\\t.*?\\t(\\\".*\\\")");
         int line = 0;
-        ReviewDTO reviewDTO;
-        Review newReview;
+        ReviewDTO reviewDTO;        
+        Book book;
+        book = bookRepository.findOne(bookId);
         Optional<Book> existingBook;
         existingBook = Optional.ofNullable(bookRepository.findOne(bookId));
 
@@ -180,8 +181,7 @@ public class ReviewService {
                 while ((mystring = myBufferedReader.readLine()) != null) {
                     //System.out.println(mystring);
                     line += 1;
-                    
-                    
+                    System.out.println("Line:" + line);                   
                     
                     Matcher myMacher = myPatterCompileColumnCatcher.matcher(mystring);
 
@@ -189,12 +189,13 @@ public class ReviewService {
                         mystring = Jsoup.parse(myMacher.group(1).toLowerCase()).text();//Remove html
                         mystring = mystring.trim();
                         if (mystring != null) {
-                            mystring = this.cleanString(mystring);
-                            reviewDTO = new ReviewDTO();
-                            reviewDTO.setBookId(bookId);
-                            reviewDTO.setReviewtext(mystring);
-                            reviewDTO.setReviewstring("text");
-                            newReview = this.createReview(reviewDTO);                            
+                            mystring = this.cleanString(mystring);                         
+                            Review newReview=new Review();
+                            newReview.setBook(book);
+                            newReview.setReviewstring("text");
+                            newReview.setReviewtext(mystring);
+                           reviewRepository.save(newReview);
+                            
                         }
                     }
                 }

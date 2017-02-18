@@ -12,7 +12,7 @@ services:
             - 8080:8080
         volumes:
           # Specify an absolute path mapping
-            - /home/steiner/jhipster/csv_files:/csv_files
+            - /home/steiner/amazon_book_reviews:/csv_files
     myservice-postgresql:
         extends:
             file: postgresql.yml
