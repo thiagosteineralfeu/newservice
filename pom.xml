@@ -95,7 +95,7 @@
             <artifactId>jhipster</artifactId>
             <version>${jhipster.server.version}</version>
         </dependency>
-        <!-- Add by thiagosteiner -->
+        <!-- Jsoup Add by thiagosteiner -->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
@@ -592,6 +592,7 @@
                     <jvmArguments>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArguments>
                     -->
                 </configuration>
+            <!-- Docker Host add by thiagosteiner -->
             </plugin>
             <plugin>
                 <groupId>com.spotify</groupId>
