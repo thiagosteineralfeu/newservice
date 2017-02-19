@@ -37,15 +37,17 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final WordRepository wordRepository;
     private final WordOccurrencesRepository wordOccurrencesRepository;
+    private final UtilService utilService;
 
     public ReviewService(ReviewRepository reviewRepository,
             WordRepository wordRepository,
             WordOccurrencesRepository wordOccurrencesRepository,
-            BookRepository bookRepository) {
+            BookRepository bookRepository, UtilService utilService) {
         this.reviewRepository = reviewRepository;
         this.wordRepository = wordRepository;
         this.wordOccurrencesRepository = wordOccurrencesRepository;
         this.bookRepository = bookRepository;
+        this.utilService = utilService;
 
     }
 
@@ -53,13 +55,13 @@ public class ReviewService {
         Review review = new Review();
         Book book = bookRepository.findOne(reviewDTO.getBookId());
         review.setBook(book);
-        String cleanreviewstring = this.cleanString(reviewDTO.getReviewstring());
-        String cleanreviewtext = this.cleanString(reviewDTO.getReviewtext());
+        String cleanreviewstring = utilService.cleanString(reviewDTO.getReviewstring());
+        String cleanreviewtext = utilService.cleanString(reviewDTO.getReviewtext());
         //Todo test reviewtext null or empity
         review.setReviewstring(cleanreviewstring);
         review.setReviewtext(cleanreviewtext);
         Map<String, Integer> myMap;
-        myMap = CountWords(cleanreviewtext);
+        myMap = utilService.CountWords(cleanreviewtext);
         review = reviewRepository.save(review);
         review = this.updateWordOccurrences(review, myMap, wordIdMap);
         reviewRepository.save(review);
@@ -71,30 +73,26 @@ public class ReviewService {
             Map<String, Integer> myMap, HashMap<String, Long> wordIdMap) {
 
         Optional<Long> existingWordId;
-        Optional<Word> existingWord;
-        Word myWord=null;
+        Word myWord = null;
         Long myWordId;
 
         Set<String> keys = myMap.keySet();
         for (String key : keys) {
             existingWordId = Optional.ofNullable(wordIdMap.get(key));
-            
-            if (existingWordId.isPresent()) {
-                    myWordId = existingWordId.get();
-                    myWord = wordRepository.findOne(myWordId);
-                    //Todo Make a Local HashMap will new words
-                }else if (!existingWordId.isPresent() && ! wordRepository.findByWordstring(key).isPresent()) {
-                    myWord = new Word();
-                    myWord.setWordstring(key);
-                    myWord = wordRepository.save(myWord);
-                }
-                
-            else {
-                                 
-                    myWord = wordRepository.findByWordstring(key).get();
 
-                }
-            
+            if (existingWordId.isPresent()) {
+                myWordId = existingWordId.get();
+                myWord = wordRepository.findOne(myWordId);
+                //Todo Make a Local HashMap will new words
+            } else if (!existingWordId.isPresent() && !wordRepository.findByWordstring(key).isPresent()) {
+                myWord = new Word();
+                myWord.setWordstring(key);
+                myWord = wordRepository.save(myWord);
+            } else {
+
+                myWord = wordRepository.findByWordstring(key).get();
+
+            }
 
             WordOccurrences wordOccurences = new WordOccurrences();
             wordOccurences.setReview(review);
@@ -104,77 +102,6 @@ public class ReviewService {
         }
 
         return review;
-    }
-
-    /**
-     * TO DO
-     */
-    private String cleanString(String mystring) {
-
-        mystring = mystring.toLowerCase().trim();
-
-        //mystring = Jsoup.parse(mystring.toLowerCase()).text();//Remove html
-        //Tratamos alguns casos de contração. 
-        //Casos com 'd e 's como possuem múltiplos significados serão tratados removendo o apóstrofo
-        mystring = mystring.replaceAll("can't", "can not");
-        mystring = mystring.replaceAll("n't", " not");
-        mystring = mystring.replaceAll("'re", " are");
-        mystring = mystring.replaceAll("'m", " am");
-        mystring = mystring.replaceAll("'ll", " will");
-        mystring = mystring.replaceAll("'ve", " have");
-        mystring = mystring.replaceAll("\\.", " ");
-        mystring = mystring.replaceAll(",", " ");
-        mystring = mystring.replaceAll("\\?", " ");
-        mystring = mystring.replaceAll("!", " ");
-
-        //Remove all char not in this range. Replace with no space. There will be some contractions
-        mystring = mystring.replaceAll("[^a-zA-Z|\\s]", "");
-        mystring = mystring.replaceAll("[\\t]", "");
-
-        //Remove some  contractions
-        mystring = mystring.replaceAll("didnt", "did not");
-        mystring = mystring.replaceAll("doesnt", "does not");
-        mystring = mystring.replaceAll("wasnt", "was not");
-        mystring = mystring.replaceAll("havent", "have not");
-        mystring = mystring.replaceAll("wouldnt", "would not");
-        mystring = mystring.replaceAll("couldnt", "could not");
-        mystring = mystring.replaceAll("shouldnt", "should not");
-
-        //use some regex to replace with safety
-        mystring = mystring.replaceAll("^.?cant$", "can not");
-        mystring = mystring.replaceAll("^.?its$", "it is");
-        mystring = mystring.replaceAll("^.?thats$", "that is");
-
-        //Remove urls
-        mystring = mystring.replaceAll("\\\\ (?:(?:https?):\\\\/\\\\/www\\\\.\\\\.*?.*?) ", " ");
-
-        //Remove multiple whithe spaces
-        mystring = mystring.trim().replaceAll(" +", " ");
-
-        return mystring;
-    }
-
-    private Map<String, Integer> CountWords(String cleanreviewstring) {
-
-        Map<String, Integer> myMap = new HashMap<>();
-
-        if (cleanreviewstring != null) {
-            cleanreviewstring = cleanreviewstring.trim();
-            String[] tokens = cleanreviewstring.split(" ");
-            for (String word : tokens) {
-                if (myMap.containsKey(word)) {
-                    int count = myMap.get(word.trim());
-                    myMap.put(word.trim(), count + 1);
-                } else {
-                    myMap.put(word.trim(), 1);
-                }
-            }
-        } else {
-
-            myMap = null;
-
-        }
-        return myMap;
     }
 
     @Async
@@ -206,13 +133,13 @@ public class ReviewService {
                         mystring = Jsoup.parse(myMacher.group(1).toLowerCase()).text();//Remove html
                         mystring = mystring.trim();
                         if (mystring != null && !mystring.isEmpty()) {
-                            mystring = this.cleanString(mystring);
+                            mystring = utilService.cleanString(mystring);
                             Review newReview = new Review();
                             newReview.setBook(book);
                             newReview.setReviewstring("text");
                             newReview.setReviewtext(mystring);
                             Map<String, Integer> myMap;
-                            myMap = CountWords(mystring);
+                            myMap = utilService.CountWords(mystring);
                             newReview = reviewRepository.save(newReview);
                             newReview = this.updateWordOccurrences(newReview, myMap, wordIdMap);
                             reviewRepository.save(newReview);
@@ -222,7 +149,7 @@ public class ReviewService {
                 myBufferedReader.close();
                 long endTime = System.nanoTime();
                 long duration = endTime - startTime;
-                System.out.println("Tempo(milisegundos)="+TimeUnit.NANOSECONDS.toMillis(duration));
+                System.out.println("Tempo(milisegundos)=" + TimeUnit.NANOSECONDS.toMillis(duration));
 
             } catch (IOException e) {
                 log.warn("csv file stop in line '{}'", line, e);
