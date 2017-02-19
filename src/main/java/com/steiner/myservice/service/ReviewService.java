@@ -37,22 +37,20 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final WordRepository wordRepository;
     private final WordOccurrencesRepository wordOccurrencesRepository;
-    private final UtilService utilService;
 
     public ReviewService(ReviewRepository reviewRepository,
             WordRepository wordRepository,
             WordOccurrencesRepository wordOccurrencesRepository,
-            BookRepository bookRepository, UtilService utilService) {
+            BookRepository bookRepository) {
         this.reviewRepository = reviewRepository;
         this.wordRepository = wordRepository;
         this.wordOccurrencesRepository = wordOccurrencesRepository;
         this.bookRepository = bookRepository;
-        this.utilService = utilService;
-
     }
 
     public Review createReview(ReviewDTO reviewDTO, HashMap<String, Long> wordIdMap) {
         Review review = new Review();
+        UtilService utilService=new UtilService();
         Book book = bookRepository.findOne(reviewDTO.getBookId());
         review.setBook(book);
         String cleanreviewstring = utilService.cleanString(reviewDTO.getReviewstring());
@@ -109,6 +107,7 @@ public class ReviewService {
             HashMap<String, Long> wordIdMap) throws FileNotFoundException, IOException {
 
         String mystring;
+        UtilService utilService=new UtilService();
         Pattern myPatterCompileColumnCatcher
                 = Pattern.compile(".*?\\t.*?\\t.*?\\t(\\\".*\\\")");
         int line = 0;
