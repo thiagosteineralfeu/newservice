@@ -2,8 +2,10 @@ package com.steiner.myservice.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.steiner.myservice.domain.Review;
+import com.steiner.myservice.domain.Word;
 
 import com.steiner.myservice.repository.ReviewRepository;
+import com.steiner.myservice.repository.WordRepository;
 import com.steiner.myservice.service.ReviewService;
 import com.steiner.myservice.web.rest.util.HeaderUtil;
 import com.steiner.myservice.service.dto.ReviewDTO;
@@ -18,11 +20,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * REST controller for managing Review.
@@ -34,24 +39,42 @@ public class ReviewResource {
     private final Logger log = LoggerFactory.getLogger(ReviewResource.class);
 
     private static final String ENTITY_NAME = "review";
-        
+
+    private static final HashMap<String, Long> wordIdMap = new HashMap<>();
+
     private final ReviewRepository reviewRepository;
-    
+
+    private final WordRepository wordRepository;
+
     private final ReviewService reviewService;
 
     private final ReviewMapper reviewMapper;
 
-    public ReviewResource(ReviewRepository reviewRepository, ReviewMapper reviewMapper,ReviewService reviewService) {
+    public ReviewResource(ReviewRepository reviewRepository, ReviewMapper reviewMapper, ReviewService reviewService,
+            WordRepository wordRepository) {
         this.reviewRepository = reviewRepository;
         this.reviewMapper = reviewMapper;
         this.reviewService = reviewService;
+        this.wordRepository = wordRepository;
+
+        //HashMap<String, Long> wordIdMap = new HashMap<>();
+        List<Word> wordList = wordRepository.findAll();
+        if (wordList != null) {
+            wordList.forEach((Word word) -> {
+                wordIdMap.put(word.getWordstring(), word.getId());
+            });
+            
+        }
+
     }
 
     /**
-     * POST  /reviews : Create a new review.
+     * POST /reviews : Create a new review.
      *
      * @param reviewDTO the reviewDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new reviewDTO, or with status 400 (Bad Request) if the review has already an ID
+     * @return the ResponseEntity with status 201 (Created) and with body the
+     * new reviewDTO, or with status 400 (Bad Request) if the review has already
+     * an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/reviews")
@@ -63,21 +86,23 @@ public class ReviewResource {
         }
         //Review review = reviewMapper.reviewDTOToReview(reviewDTO);
         //review = reviewRepository.save(review);
-        Review review =reviewService.createReview(reviewDTO);
+        Review review = reviewService.createReview(reviewDTO,wordIdMap);
         ReviewDTO result = reviewMapper.reviewToReviewDTO(review);
         return ResponseEntity.created(new URI("/api/reviews/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-            .body(result);
+                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                .body(result);
     }
-    
-        /**
-     * POST  /reviews : Create a new review.
+
+    /**
+     * POST /reviews/csv: Create reviews from CSV file.
      *
      * @param reviewDTO the reviewDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new reviewDTO, or with status 400 (Bad Request) if the review has already an ID
+     * @return the ResponseEntity with status 201 (Created) and with body the
+     * new reviewDTO, or with status 400 (Bad Request) if the review has already
+     * an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PostMapping("/reviewsfromcsv")
+    @PostMapping("/reviews/csv")
     @Timed
     public ResponseEntity<ReviewDTO> createReviewFromCSVFile(@Valid @RequestBody ReviewDTO reviewDTO) throws URISyntaxException {
         log.debug("REST request to save Review : {}", reviewDTO);
@@ -85,25 +110,26 @@ public class ReviewResource {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new review cannot already have an ID")).body(null);
         }
 
-        Long bookId= reviewDTO.getBookId();
-        String path=reviewDTO.getReviewstring();
-        
+        Long bookId = reviewDTO.getBookId();
+        String path = reviewDTO.getReviewstring();
+
         try {
-            reviewService.processReviewFromCsvFile(path, bookId);
+            reviewService.processReviewFromCsvFile(path, bookId,wordIdMap);
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(ReviewResource.class.getName()).log(Level.SEVERE, null, ex);
         }
-       return ResponseEntity.ok()          
-            .body(null);
+        return ResponseEntity.ok()
+                .body(null);
     }
-    
+
     /**
-     * PUT  /reviews : Updates an existing review.
+     * PUT /reviews : Updates an existing review.
      *
      * @param reviewDTO the reviewDTO to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated reviewDTO,
-     * or with status 400 (Bad Request) if the reviewDTO is not valid,
-     * or with status 500 (Internal Server Error) if the reviewDTO couldnt be updated
+     * @return the ResponseEntity with status 200 (OK) and with body the updated
+     * reviewDTO, or with status 400 (Bad Request) if the reviewDTO is not
+     * valid, or with status 500 (Internal Server Error) if the reviewDTO
+     * couldnt be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/reviews")
@@ -117,14 +143,15 @@ public class ReviewResource {
         review = reviewRepository.save(review);
         ReviewDTO result = reviewMapper.reviewToReviewDTO(review);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, reviewDTO.getId().toString()))
-            .body(result);
+                .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, reviewDTO.getId().toString()))
+                .body(result);
     }
 
     /**
-     * GET  /reviews : get all the reviews.
+     * GET /reviews : get all the reviews.
      *
-     * @return the ResponseEntity with status 200 (OK) and the list of reviews in body
+     * @return the ResponseEntity with status 200 (OK) and the list of reviews
+     * in body
      */
     @GetMapping("/reviews")
     @Timed
@@ -135,10 +162,11 @@ public class ReviewResource {
     }
 
     /**
-     * GET  /reviews/:id : get the "id" review.
+     * GET /reviews/:id : get the "id" review.
      *
      * @param id the id of the reviewDTO to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the reviewDTO, or with status 404 (Not Found)
+     * @return the ResponseEntity with status 200 (OK) and with body the
+     * reviewDTO, or with status 404 (Not Found)
      */
     @GetMapping("/reviews/{id}")
     @Timed
@@ -150,7 +178,7 @@ public class ReviewResource {
     }
 
     /**
-     * DELETE  /reviews/:id : delete the "id" review.
+     * DELETE /reviews/:id : delete the "id" review.
      *
      * @param id the id of the reviewDTO to delete
      * @return the ResponseEntity with status 200 (OK)

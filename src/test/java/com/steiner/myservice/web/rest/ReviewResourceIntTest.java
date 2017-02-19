@@ -5,6 +5,7 @@ import com.steiner.myservice.MyserviceApp;
 import com.steiner.myservice.domain.Review;
 import com.steiner.myservice.domain.Book;
 import com.steiner.myservice.repository.ReviewRepository;
+import com.steiner.myservice.repository.WordRepository;
 import com.steiner.myservice.service.ReviewService;
 import com.steiner.myservice.service.dto.ReviewDTO;
 import com.steiner.myservice.service.mapper.ReviewMapper;
@@ -51,6 +52,9 @@ public class ReviewResourceIntTest {
 
     @Autowired
     private ReviewRepository reviewRepository;
+    
+    @Autowired
+    private WordRepository wordRepository;
 
     @Autowired
     private ReviewMapper reviewMapper;
@@ -77,7 +81,7 @@ public class ReviewResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-            ReviewResource reviewResource = new ReviewResource(reviewRepository, reviewMapper,reviewService);
+            ReviewResource reviewResource = new ReviewResource(reviewRepository, reviewMapper,reviewService,wordRepository);
         this.restReviewMockMvc = MockMvcBuilders.standaloneSetup(reviewResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)

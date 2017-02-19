@@ -14,10 +14,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
@@ -46,47 +46,61 @@ public class ReviewService {
         this.wordRepository = wordRepository;
         this.wordOccurrencesRepository = wordOccurrencesRepository;
         this.bookRepository = bookRepository;
+
     }
 
-    public Review createReview(ReviewDTO reviewDTO) {
+    public Review createReview(ReviewDTO reviewDTO, HashMap<String, Long> wordIdMap) {
         Review review = new Review();
         Book book = bookRepository.findOne(reviewDTO.getBookId());
         review.setBook(book);
         String cleanreviewstring = this.cleanString(reviewDTO.getReviewstring());
-        String cleanreviewtext=this.cleanString(reviewDTO.getReviewtext());
+        String cleanreviewtext = this.cleanString(reviewDTO.getReviewtext());
+        //Todo test reviewtext null or empity
         review.setReviewstring(cleanreviewstring);
         review.setReviewtext(cleanreviewtext);
-        Map<String, Integer> myMap = new HashMap<>();
+        Map<String, Integer> myMap;
         myMap = CountWords(cleanreviewtext);
-        Long id = reviewRepository.save(review).getId();
-        review = reviewRepository.findOne(id);
-        review = this.updateWordOccurrences(review, myMap);
+        review = reviewRepository.save(review);
+        review = this.updateWordOccurrences(review, myMap, wordIdMap);
         reviewRepository.save(review);
         log.debug("Created Review: {}", review);
         return review;
     }
 
     private Review updateWordOccurrences(Review review,
-            Map<String, Integer> myMap) {
+            Map<String, Integer> myMap, HashMap<String, Long> wordIdMap) {
 
+        Optional<Long> existingWordId;
         Optional<Word> existingWord;
-        Word myWord;
+        Word myWord=null;
+        Long myWordId;
+
         Set<String> keys = myMap.keySet();
         for (String key : keys) {
-            existingWord = wordRepository.findByWordstring(key);
-            if (!existingWord.isPresent()) {
-                myWord = new Word();
-                myWord.setWordstring(key);
-                Long id = wordRepository.save(myWord).getId();
-                myWord = wordRepository.findOne(id);
-            } else {
-                myWord = existingWord.get();
-            }
+            existingWordId = Optional.ofNullable(wordIdMap.get(key));
+            
+            if (existingWordId.isPresent()) {
+                    myWordId = existingWordId.get();
+                    myWord = wordRepository.findOne(myWordId);
+                    //Todo Make a Local HashMap will new words
+                }else if (!existingWordId.isPresent() && ! wordRepository.findByWordstring(key).isPresent()) {
+                    myWord = new Word();
+                    myWord.setWordstring(key);
+                    myWord = wordRepository.save(myWord);
+                }
+                
+            else {
+                                 
+                    myWord = wordRepository.findByWordstring(key).get();
+
+                }
+            
+
             WordOccurrences wordOccurences = new WordOccurrences();
             wordOccurences.setReview(review);
             wordOccurences.setAmountoccurrences(myMap.get(key));
             wordOccurences.setWord(myWord);
-            wordOccurences = wordOccurrencesRepository.save(wordOccurences);
+            wordOccurrencesRepository.save(wordOccurences);
         }
 
         return review;
@@ -164,12 +178,15 @@ public class ReviewService {
     }
 
     @Async
-    public void processReviewFromCsvFile(String csvfilepath, Long bookId) throws FileNotFoundException, IOException {
+    public void processReviewFromCsvFile(String csvfilepath, Long bookId,
+            HashMap<String, Long> wordIdMap) throws FileNotFoundException, IOException {
 
         String mystring;
-        Pattern myPatterCompileColumnCatcher = Pattern.compile(".*?\\t.*?\\t.*?\\t(\\\".*\\\")");
+        Pattern myPatterCompileColumnCatcher
+                = Pattern.compile(".*?\\t.*?\\t.*?\\t(\\\".*\\\")");
         int line = 0;
-        ReviewDTO reviewDTO;        
+        // Start time
+        long startTime = System.nanoTime();
         Book book;
         book = bookRepository.findOne(bookId);
         Optional<Book> existingBook;
@@ -181,25 +198,31 @@ public class ReviewService {
                 while ((mystring = myBufferedReader.readLine()) != null) {
                     //System.out.println(mystring);
                     line += 1;
-                    System.out.println("Line:" + line);                   
-                    
+                    System.out.println("Line:" + line);
+
                     Matcher myMacher = myPatterCompileColumnCatcher.matcher(mystring);
 
                     if (myMacher.find()) {
                         mystring = Jsoup.parse(myMacher.group(1).toLowerCase()).text();//Remove html
                         mystring = mystring.trim();
-                        if (mystring != null) {
-                            mystring = this.cleanString(mystring);                         
-                            Review newReview=new Review();
+                        if (mystring != null && !mystring.isEmpty()) {
+                            mystring = this.cleanString(mystring);
+                            Review newReview = new Review();
                             newReview.setBook(book);
                             newReview.setReviewstring("text");
                             newReview.setReviewtext(mystring);
-                           reviewRepository.save(newReview);
-                            
+                            Map<String, Integer> myMap;
+                            myMap = CountWords(mystring);
+                            newReview = reviewRepository.save(newReview);
+                            newReview = this.updateWordOccurrences(newReview, myMap, wordIdMap);
+                            reviewRepository.save(newReview);
                         }
                     }
                 }
                 myBufferedReader.close();
+                long endTime = System.nanoTime();
+                long duration = endTime - startTime;
+                System.out.println("Tempo(milisegundos)="+TimeUnit.NANOSECONDS.toMillis(duration));
 
             } catch (IOException e) {
                 log.warn("csv file stop in line '{}'", line, e);
