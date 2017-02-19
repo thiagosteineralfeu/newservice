@@ -6,6 +6,7 @@ import com.steiner.myservice.domain.Word;
 
 import com.steiner.myservice.repository.ReviewRepository;
 import com.steiner.myservice.repository.WordRepository;
+import com.steiner.myservice.service.CsvService;
 import com.steiner.myservice.service.ReviewService;
 import com.steiner.myservice.web.rest.util.HeaderUtil;
 import com.steiner.myservice.service.dto.ReviewDTO;
@@ -21,13 +22,8 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * REST controller for managing Review.
@@ -46,16 +42,19 @@ public class ReviewResource {
 
     private final WordRepository wordRepository;
 
+    private final CsvService csvService;
+
     private final ReviewService reviewService;
 
     private final ReviewMapper reviewMapper;
 
     public ReviewResource(ReviewRepository reviewRepository, ReviewMapper reviewMapper, ReviewService reviewService,
-            WordRepository wordRepository) {
+            WordRepository wordRepository, CsvService csvService) {
         this.reviewRepository = reviewRepository;
         this.reviewMapper = reviewMapper;
         this.reviewService = reviewService;
         this.wordRepository = wordRepository;
+        this.csvService = csvService;
 
         //HashMap<String, Long> wordIdMap = new HashMap<>();
         List<Word> wordList = wordRepository.findAll();
@@ -63,7 +62,7 @@ public class ReviewResource {
             wordList.forEach((Word word) -> {
                 wordIdMap.put(word.getWordstring(), word.getId());
             });
-            
+
         }
 
     }
@@ -86,7 +85,7 @@ public class ReviewResource {
         }
         //Review review = reviewMapper.reviewDTOToReview(reviewDTO);
         //review = reviewRepository.save(review);
-        Review review = reviewService.createReview(reviewDTO,wordIdMap);
+        Review review = reviewService.createReview(reviewDTO, wordIdMap);
         ReviewDTO result = reviewMapper.reviewToReviewDTO(review);
         return ResponseEntity.created(new URI("/api/reviews/" + result.getId()))
                 .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
@@ -114,9 +113,9 @@ public class ReviewResource {
         String path = reviewDTO.getReviewstring();
 
         try {
-            reviewService.processReviewFromCsvFile(path, bookId,wordIdMap);
+            csvService.processReviewFromCsvFile(path, bookId, wordIdMap);
         } catch (IOException ex) {
-            log.warn("Error in createReviewFromCSVFile",ex);
+            log.warn("Error in createReviewFromCSVFile", ex);
         }
         return ResponseEntity.ok()
                 .body(null);

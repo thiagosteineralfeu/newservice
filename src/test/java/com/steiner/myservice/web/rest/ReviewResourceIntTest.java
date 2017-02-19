@@ -6,6 +6,7 @@ import com.steiner.myservice.domain.Review;
 import com.steiner.myservice.domain.Book;
 import com.steiner.myservice.repository.ReviewRepository;
 import com.steiner.myservice.repository.WordRepository;
+import com.steiner.myservice.service.CsvService;
 import com.steiner.myservice.service.ReviewService;
 import com.steiner.myservice.service.dto.ReviewDTO;
 import com.steiner.myservice.service.mapper.ReviewMapper;
@@ -52,15 +53,18 @@ public class ReviewResourceIntTest {
 
     @Autowired
     private ReviewRepository reviewRepository;
-    
+
     @Autowired
     private WordRepository wordRepository;
 
     @Autowired
     private ReviewMapper reviewMapper;
-    
+
     @Autowired
     private ReviewService reviewService;
+
+    @Autowired
+    private CsvService csvService;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -81,11 +85,12 @@ public class ReviewResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-            ReviewResource reviewResource = new ReviewResource(reviewRepository, reviewMapper,reviewService,wordRepository);
+        ReviewResource reviewResource = new ReviewResource(reviewRepository,
+                reviewMapper, reviewService, wordRepository, csvService);
         this.restReviewMockMvc = MockMvcBuilders.standaloneSetup(reviewResource)
-            .setCustomArgumentResolvers(pageableArgumentResolver)
-            .setControllerAdvice(exceptionTranslator)
-            .setMessageConverters(jacksonMessageConverter).build();
+                .setCustomArgumentResolvers(pageableArgumentResolver)
+                .setControllerAdvice(exceptionTranslator)
+                .setMessageConverters(jacksonMessageConverter).build();
     }
 
     /**
@@ -120,9 +125,9 @@ public class ReviewResourceIntTest {
         ReviewDTO reviewDTO = reviewMapper.reviewToReviewDTO(review);
 
         restReviewMockMvc.perform(post("/api/reviews")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(reviewDTO)))
-            .andExpect(status().isCreated());
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(reviewDTO)))
+                .andExpect(status().isCreated());
 
         // Validate the Review in the database
         List<Review> reviewList = reviewRepository.findAll();
@@ -144,9 +149,9 @@ public class ReviewResourceIntTest {
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restReviewMockMvc.perform(post("/api/reviews")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(existingReviewDTO)))
-            .andExpect(status().isBadRequest());
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(existingReviewDTO)))
+                .andExpect(status().isBadRequest());
 
         // Validate the Alice in the database
         List<Review> reviewList = reviewRepository.findAll();
@@ -164,9 +169,9 @@ public class ReviewResourceIntTest {
         ReviewDTO reviewDTO = reviewMapper.reviewToReviewDTO(review);
 
         restReviewMockMvc.perform(post("/api/reviews")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(reviewDTO)))
-            .andExpect(status().isBadRequest());
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(reviewDTO)))
+                .andExpect(status().isBadRequest());
 
         List<Review> reviewList = reviewRepository.findAll();
         assertThat(reviewList).hasSize(databaseSizeBeforeTest);
@@ -183,9 +188,9 @@ public class ReviewResourceIntTest {
         ReviewDTO reviewDTO = reviewMapper.reviewToReviewDTO(review);
 
         restReviewMockMvc.perform(post("/api/reviews")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(reviewDTO)))
-            .andExpect(status().isBadRequest());
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(reviewDTO)))
+                .andExpect(status().isBadRequest());
 
         List<Review> reviewList = reviewRepository.findAll();
         assertThat(reviewList).hasSize(databaseSizeBeforeTest);
@@ -199,11 +204,11 @@ public class ReviewResourceIntTest {
 
         // Get all the reviewList
         restReviewMockMvc.perform(get("/api/reviews?sort=id,desc"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(review.getId().intValue())))
-            .andExpect(jsonPath("$.[*].reviewstring").value(hasItem(DEFAULT_REVIEWSTRING.toString())))
-            .andExpect(jsonPath("$.[*].reviewtext").value(hasItem(DEFAULT_REVIEWTEXT.toString())));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.[*].id").value(hasItem(review.getId().intValue())))
+                .andExpect(jsonPath("$.[*].reviewstring").value(hasItem(DEFAULT_REVIEWSTRING.toString())))
+                .andExpect(jsonPath("$.[*].reviewtext").value(hasItem(DEFAULT_REVIEWTEXT.toString())));
     }
 
     @Test
@@ -214,11 +219,11 @@ public class ReviewResourceIntTest {
 
         // Get the review
         restReviewMockMvc.perform(get("/api/reviews/{id}", review.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.id").value(review.getId().intValue()))
-            .andExpect(jsonPath("$.reviewstring").value(DEFAULT_REVIEWSTRING.toString()))
-            .andExpect(jsonPath("$.reviewtext").value(DEFAULT_REVIEWTEXT.toString()));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.id").value(review.getId().intValue()))
+                .andExpect(jsonPath("$.reviewstring").value(DEFAULT_REVIEWSTRING.toString()))
+                .andExpect(jsonPath("$.reviewtext").value(DEFAULT_REVIEWTEXT.toString()));
     }
 
     @Test
@@ -226,7 +231,7 @@ public class ReviewResourceIntTest {
     public void getNonExistingReview() throws Exception {
         // Get the review
         restReviewMockMvc.perform(get("/api/reviews/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -244,9 +249,9 @@ public class ReviewResourceIntTest {
         ReviewDTO reviewDTO = reviewMapper.reviewToReviewDTO(updatedReview);
 
         restReviewMockMvc.perform(put("/api/reviews")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(reviewDTO)))
-            .andExpect(status().isOk());
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(reviewDTO)))
+                .andExpect(status().isOk());
 
         // Validate the Review in the database
         List<Review> reviewList = reviewRepository.findAll();
@@ -266,9 +271,9 @@ public class ReviewResourceIntTest {
 
         // If the entity doesn't have an ID, it will be created instead of just being updated
         restReviewMockMvc.perform(put("/api/reviews")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(reviewDTO)))
-            .andExpect(status().isCreated());
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(reviewDTO)))
+                .andExpect(status().isCreated());
 
         // Validate the Review in the database
         List<Review> reviewList = reviewRepository.findAll();
@@ -284,8 +289,8 @@ public class ReviewResourceIntTest {
 
         // Get the review
         restReviewMockMvc.perform(delete("/api/reviews/{id}", review.getId())
-            .accept(TestUtil.APPLICATION_JSON_UTF8))
-            .andExpect(status().isOk());
+                .accept(TestUtil.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk());
 
         // Validate the database is empty
         List<Review> reviewList = reviewRepository.findAll();
