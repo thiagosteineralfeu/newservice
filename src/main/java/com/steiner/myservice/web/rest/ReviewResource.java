@@ -116,7 +116,7 @@ public class ReviewResource {
         try {
             reviewService.processReviewFromCsvFile(path, bookId,wordIdMap);
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(ReviewResource.class.getName()).log(Level.SEVERE, null, ex);
+            log.warn("Error in createReviewFromCSVFile",ex);
         }
         return ResponseEntity.ok()
                 .body(null);

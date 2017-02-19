@@ -50,7 +50,7 @@ public class ReviewService {
 
     public Review createReview(ReviewDTO reviewDTO, HashMap<String, Long> wordIdMap) {
         Review review = new Review();
-        UtilService utilService=new UtilService();
+        UtilService utilService = new UtilService();
         Book book = bookRepository.findOne(reviewDTO.getBookId());
         review.setBook(book);
         String cleanreviewstring = utilService.cleanString(reviewDTO.getReviewstring());
@@ -71,8 +71,10 @@ public class ReviewService {
             Map<String, Integer> myMap, HashMap<String, Long> wordIdMap) {
 
         Optional<Long> existingWordId;
+
         Word myWord = null;
         Long myWordId;
+        WordService wordService = new WordService(wordRepository);
 
         Set<String> keys = myMap.keySet();
         for (String key : keys) {
@@ -82,13 +84,17 @@ public class ReviewService {
                 myWordId = existingWordId.get();
                 myWord = wordRepository.findOne(myWordId);
                 //Todo Make a Local HashMap will new words
-            } else if (!existingWordId.isPresent() && !wordRepository.findByWordstring(key).isPresent()) {
-                myWord = new Word();
-                myWord.setWordstring(key);
-                myWord = wordRepository.save(myWord);
+
             } else {
 
-                myWord = wordRepository.findByWordstring(key).get();
+                try {
+                    myWord = wordService.findOrSaveWord(key);
+
+                } catch (Exception e) {
+                    log.debug("Error creating word: {}", e);
+                    myWord = wordRepository.findByWordstring(key).get();
+
+                }
 
             }
 
@@ -107,7 +113,7 @@ public class ReviewService {
             HashMap<String, Long> wordIdMap) throws FileNotFoundException, IOException {
 
         String mystring;
-        UtilService utilService=new UtilService();
+        UtilService utilService = new UtilService();
         Pattern myPatterCompileColumnCatcher
                 = Pattern.compile(".*?\\t.*?\\t.*?\\t(\\\".*\\\")");
         int line = 0;
