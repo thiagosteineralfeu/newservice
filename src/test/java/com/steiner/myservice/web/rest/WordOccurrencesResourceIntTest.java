@@ -3,7 +3,6 @@ package com.steiner.myservice.web.rest;
 import com.steiner.myservice.MyserviceApp;
 
 import com.steiner.myservice.domain.WordOccurrences;
-import com.steiner.myservice.domain.Word;
 import com.steiner.myservice.domain.Review;
 import com.steiner.myservice.repository.WordOccurrencesRepository;
 import com.steiner.myservice.service.dto.WordOccurrencesDTO;
@@ -39,11 +38,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MyserviceApp.class)
-@Transactional
 public class WordOccurrencesResourceIntTest {
 
     private static final Integer DEFAULT_AMOUNTOCCURRENCES = 1;
     private static final Integer UPDATED_AMOUNTOCCURRENCES = 2;
+
+    private static final String DEFAULT_WORD = "AAAAAAAAAA";
+    private static final String UPDATED_WORD = "BBBBBBBBBB";
 
     @Autowired
     private WordOccurrencesRepository wordOccurrencesRepository;
@@ -85,12 +86,8 @@ public class WordOccurrencesResourceIntTest {
      */
     public static WordOccurrences createEntity(EntityManager em) {
         WordOccurrences wordOccurrences = new WordOccurrences()
-                .amountoccurrences(DEFAULT_AMOUNTOCCURRENCES);
-        // Add required entity
-        Word word = WordResourceIntTest.createEntity(em);
-        em.persist(word);
-        em.flush();
-        wordOccurrences.setWord(word);
+                .amountoccurrences(DEFAULT_AMOUNTOCCURRENCES)
+                .word(DEFAULT_WORD);
         // Add required entity
         Review review = ReviewResourceIntTest.createEntity(em);
         em.persist(review);
@@ -122,6 +119,7 @@ public class WordOccurrencesResourceIntTest {
         assertThat(wordOccurrencesList).hasSize(databaseSizeBeforeCreate + 1);
         WordOccurrences testWordOccurrences = wordOccurrencesList.get(wordOccurrencesList.size() - 1);
         assertThat(testWordOccurrences.getAmountoccurrences()).isEqualTo(DEFAULT_AMOUNTOCCURRENCES);
+        assertThat(testWordOccurrences.getWord()).isEqualTo(DEFAULT_WORD);
     }
 
     @Test
@@ -166,6 +164,25 @@ public class WordOccurrencesResourceIntTest {
 
     @Test
     @Transactional
+    public void checkWordIsRequired() throws Exception {
+        int databaseSizeBeforeTest = wordOccurrencesRepository.findAll().size();
+        // set the field null
+        wordOccurrences.setWord(null);
+
+        // Create the WordOccurrences, which fails.
+        WordOccurrencesDTO wordOccurrencesDTO = wordOccurrencesMapper.wordOccurrencesToWordOccurrencesDTO(wordOccurrences);
+
+        restWordOccurrencesMockMvc.perform(post("/api/word-occurrences")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(wordOccurrencesDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<WordOccurrences> wordOccurrencesList = wordOccurrencesRepository.findAll();
+        assertThat(wordOccurrencesList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     public void getAllWordOccurrences() throws Exception {
         // Initialize the database
         wordOccurrencesRepository.saveAndFlush(wordOccurrences);
@@ -175,7 +192,8 @@ public class WordOccurrencesResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(wordOccurrences.getId().intValue())))
-            .andExpect(jsonPath("$.[*].amountoccurrences").value(hasItem(DEFAULT_AMOUNTOCCURRENCES)));
+            .andExpect(jsonPath("$.[*].amountoccurrences").value(hasItem(DEFAULT_AMOUNTOCCURRENCES)))
+            .andExpect(jsonPath("$.[*].word").value(hasItem(DEFAULT_WORD.toString())));
     }
 
     @Test
@@ -189,7 +207,8 @@ public class WordOccurrencesResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(wordOccurrences.getId().intValue()))
-            .andExpect(jsonPath("$.amountoccurrences").value(DEFAULT_AMOUNTOCCURRENCES));
+            .andExpect(jsonPath("$.amountoccurrences").value(DEFAULT_AMOUNTOCCURRENCES))
+            .andExpect(jsonPath("$.word").value(DEFAULT_WORD.toString()));
     }
 
     @Test
@@ -210,7 +229,8 @@ public class WordOccurrencesResourceIntTest {
         // Update the wordOccurrences
         WordOccurrences updatedWordOccurrences = wordOccurrencesRepository.findOne(wordOccurrences.getId());
         updatedWordOccurrences
-                .amountoccurrences(UPDATED_AMOUNTOCCURRENCES);
+                .amountoccurrences(UPDATED_AMOUNTOCCURRENCES)
+                .word(UPDATED_WORD);
         WordOccurrencesDTO wordOccurrencesDTO = wordOccurrencesMapper.wordOccurrencesToWordOccurrencesDTO(updatedWordOccurrences);
 
         restWordOccurrencesMockMvc.perform(put("/api/word-occurrences")
@@ -223,6 +243,7 @@ public class WordOccurrencesResourceIntTest {
         assertThat(wordOccurrencesList).hasSize(databaseSizeBeforeUpdate);
         WordOccurrences testWordOccurrences = wordOccurrencesList.get(wordOccurrencesList.size() - 1);
         assertThat(testWordOccurrences.getAmountoccurrences()).isEqualTo(UPDATED_AMOUNTOCCURRENCES);
+        assertThat(testWordOccurrences.getWord()).isEqualTo(UPDATED_WORD);
     }
 
     @Test

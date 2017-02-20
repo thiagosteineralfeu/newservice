@@ -4,7 +4,7 @@ describe('Controller Tests', function() {
 
     describe('Word Management Detail Controller', function() {
         var $scope, $rootScope;
-        var MockEntity, MockPreviousState, MockWord, MockWordOccurrences, MockWordRank;
+        var MockEntity, MockPreviousState, MockWord, MockWordRank;
         var createController;
 
         beforeEach(inject(function($injector) {
@@ -13,7 +13,6 @@ describe('Controller Tests', function() {
             MockEntity = jasmine.createSpy('MockEntity');
             MockPreviousState = jasmine.createSpy('MockPreviousState');
             MockWord = jasmine.createSpy('MockWord');
-            MockWordOccurrences = jasmine.createSpy('MockWordOccurrences');
             MockWordRank = jasmine.createSpy('MockWordRank');
             
 
@@ -23,7 +22,6 @@ describe('Controller Tests', function() {
                 'entity': MockEntity,
                 'previousState': MockPreviousState,
                 'Word': MockWord,
-                'WordOccurrences': MockWordOccurrences,
                 'WordRank': MockWordRank
             };
             createController = function() {

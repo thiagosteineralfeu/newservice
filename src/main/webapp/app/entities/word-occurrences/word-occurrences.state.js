@@ -96,6 +96,7 @@
                         entity: function () {
                             return {
                                 amountoccurrences: null,
+                                word: null,
                                 id: null
                             };
                         }

@@ -29,19 +29,19 @@
                 </p>
             </div>
         </div>
-
         <div class="form-group">
-            <label for="field_word">Word</label>
-            <select class="form-control" id="field_word" name="word" ng-model="vm.wordOccurrences.wordId" ng-options="word.id as word.wordstring for word in vm.words"             required>
-                <option value=""></option>
-            </select>
+            <label class="control-label" for="field_word">Word</label>
+            <input type="text" class="form-control" name="word" id="field_word"
+                    ng-model="vm.wordOccurrences.word"
+                    required/>
+            <div ng-show="editForm.word.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.word.$error.required">
+                    This field is required.
+                </p>
+            </div>
         </div>
-        <div ng-show="editForm.word.$invalid">
-            <p class="help-block"
-                ng-show="editForm.word.$error.required">
-                This field is required.
-            </p>
-        </div>
+
         <div class="form-group">
             <label for="field_review">Review</label>
             <select class="form-control" id="field_review" name="review" ng-model="vm.wordOccurrences.reviewId" ng-options="review.id as review.id for review in vm.reviews"             required>

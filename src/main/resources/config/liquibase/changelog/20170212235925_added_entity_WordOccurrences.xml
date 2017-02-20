@@ -25,7 +25,7 @@
                 <constraints nullable="false" />
             </column>
 
-            <column name="word_id" type="bigint">
+            <column name="word" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
 

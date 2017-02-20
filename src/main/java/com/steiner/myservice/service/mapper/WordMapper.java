@@ -16,7 +16,6 @@ public interface WordMapper {
 
     List<WordDTO> wordsToWordDTOs(List<Word> words);
 
-    @Mapping(target = "wordOccurrences", ignore = true)
     @Mapping(target = "wordRanks", ignore = true)
     Word wordDTOToWord(WordDTO wordDTO);
 

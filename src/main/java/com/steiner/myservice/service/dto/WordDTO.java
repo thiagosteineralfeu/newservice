@@ -43,16 +43,14 @@ public class WordDTO implements Serializable {
 
         WordDTO wordDTO = (WordDTO) o;
 
-        //if ( ! Objects.equals(id, wordDTO.id)) { return false; }
-        if ( ! Objects.equals(wordstring, wordDTO.wordstring)) { return false; }
+        if ( ! Objects.equals(id, wordDTO.id)) { return false; }
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        //return Objects.hashCode(id);
-        return Objects.hashCode(wordstring);
+        return Objects.hashCode(id);
     }
 
     @Override

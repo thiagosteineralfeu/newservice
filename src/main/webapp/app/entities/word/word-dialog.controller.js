@@ -5,15 +5,14 @@
         .module('myserviceApp')
         .controller('WordDialogController', WordDialogController);
 
-    WordDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'entity', 'Word', 'WordOccurrences', 'WordRank'];
+    WordDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'entity', 'Word', 'WordRank'];
 
-    function WordDialogController ($timeout, $scope, $stateParams, $uibModalInstance, entity, Word, WordOccurrences, WordRank) {
+    function WordDialogController ($timeout, $scope, $stateParams, $uibModalInstance, entity, Word, WordRank) {
         var vm = this;
 
         vm.word = entity;
         vm.clear = clear;
         vm.save = save;
-        vm.wordoccurrences = WordOccurrences.query();
         vm.wordranks = WordRank.query();
 
         $timeout(function (){

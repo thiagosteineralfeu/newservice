@@ -17,7 +17,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "word")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-
 public class Word implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -28,13 +27,8 @@ public class Word implements Serializable {
     private Long id;
 
     @NotNull
-    @Column(name = "wordstring", nullable = false, unique = true)
+    @Column(name = "wordstring", nullable = false)
     private String wordstring;
-
-    @OneToMany(mappedBy = "word")
-    @JsonIgnore
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    private Set<WordOccurrences> wordOccurrences = new HashSet<>();
 
     @OneToMany(mappedBy = "word")
     @JsonIgnore
@@ -60,31 +54,6 @@ public class Word implements Serializable {
 
     public void setWordstring(String wordstring) {
         this.wordstring = wordstring;
-    }
-
-    public Set<WordOccurrences> getWordOccurrences() {
-        return wordOccurrences;
-    }
-
-    public Word wordOccurrences(Set<WordOccurrences> wordOccurrences) {
-        this.wordOccurrences = wordOccurrences;
-        return this;
-    }
-
-    public Word addWordOccurrences(WordOccurrences wordOccurrences) {
-        this.wordOccurrences.add(wordOccurrences);
-        wordOccurrences.setWord(this);
-        return this;
-    }
-
-    public Word removeWordOccurrences(WordOccurrences wordOccurrences) {
-        this.wordOccurrences.remove(wordOccurrences);
-        wordOccurrences.setWord(null);
-        return this;
-    }
-
-    public void setWordOccurrences(Set<WordOccurrences> wordOccurrences) {
-        this.wordOccurrences = wordOccurrences;
     }
 
     public Set<WordRank> getWordRanks() {
@@ -124,14 +93,12 @@ public class Word implements Serializable {
         if (word.id == null || id == null) {
             return false;
         }
-        //return Objects.equals(id, word.id);
-        return Objects.equals(wordstring, word.wordstring);
+        return Objects.equals(id, word.id);
     }
 
     @Override
     public int hashCode() {
-        //return Objects.hashCode(id);
-        return Objects.hashCode(wordstring);
+        return Objects.hashCode(id);
     }
 
     @Override

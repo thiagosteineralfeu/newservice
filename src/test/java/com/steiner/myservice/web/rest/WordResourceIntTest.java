@@ -6,6 +6,7 @@ import com.steiner.myservice.domain.Word;
 import com.steiner.myservice.repository.WordRepository;
 import com.steiner.myservice.service.dto.WordDTO;
 import com.steiner.myservice.service.mapper.WordMapper;
+import com.steiner.myservice.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +55,9 @@ public class WordResourceIntTest {
     private PageableHandlerMethodArgumentResolver pageableArgumentResolver;
 
     @Autowired
+    private ExceptionTranslator exceptionTranslator;
+
+    @Autowired
     private EntityManager em;
 
     private MockMvc restWordMockMvc;
@@ -66,6 +70,7 @@ public class WordResourceIntTest {
             WordResource wordResource = new WordResource(wordRepository, wordMapper);
         this.restWordMockMvc = MockMvcBuilders.standaloneSetup(wordResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
+            .setControllerAdvice(exceptionTranslator)
             .setMessageConverters(jacksonMessageConverter).build();
     }
 

@@ -7,13 +7,11 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * A WordOccurrences.
  */
 @Entity
-@Transactional
 @Table(name = "word_occurrences")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class WordOccurrences implements Serializable {
@@ -29,9 +27,9 @@ public class WordOccurrences implements Serializable {
     @Column(name = "amountoccurrences", nullable = false)
     private Integer amountoccurrences;
 
-    @ManyToOne(optional = false)
     @NotNull
-    private Word word;
+    @Column(name = "word", nullable = false)
+    private String word;
 
     @ManyToOne(optional = false)
     @NotNull
@@ -58,16 +56,16 @@ public class WordOccurrences implements Serializable {
         this.amountoccurrences = amountoccurrences;
     }
 
-    public Word getWord() {
+    public String getWord() {
         return word;
     }
 
-    public WordOccurrences word(Word word) {
+    public WordOccurrences word(String word) {
         this.word = word;
         return this;
     }
 
-    public void setWord(Word word) {
+    public void setWord(String word) {
         this.word = word;
     }
 
@@ -109,6 +107,7 @@ public class WordOccurrences implements Serializable {
         return "WordOccurrences{" +
             "id=" + id +
             ", amountoccurrences='" + amountoccurrences + "'" +
+            ", word='" + word + "'" +
             '}';
     }
 }

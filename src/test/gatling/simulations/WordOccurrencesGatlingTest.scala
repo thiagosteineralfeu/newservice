@@ -68,7 +68,7 @@ class WordOccurrencesGatlingTest extends Simulation {
             .exec(http("Create new wordOccurrences")
             .post("/api/word-occurrences")
             .headers(headers_http_authenticated)
-            .body(StringBody("""{"id":null, "amountoccurrences":"0"}""")).asJSON
+            .body(StringBody("""{"id":null, "amountoccurrences":"0", "word":"SAMPLE_TEXT"}""")).asJSON
             .check(status.is(201))
             .check(headerRegex("Location", "(.*)").saveAs("new_wordOccurrences_url"))).exitHereIfFailed
             .pause(10)

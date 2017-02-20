@@ -3,12 +3,6 @@
     "relationships": [
         {
             "relationshipType": "one-to-many",
-            "relationshipName": "wordOccurrences",
-            "otherEntityName": "wordOccurrences",
-            "otherEntityRelationshipName": "word"
-        },
-        {
-            "relationshipType": "one-to-many",
             "relationshipName": "wordRank",
             "otherEntityName": "wordRank",
             "otherEntityRelationshipName": "word"
@@ -24,8 +18,8 @@
         }
     ],
     "changelogDate": "20170212235925",
-    "entityTableName": "word",
     "dto": "mapstruct",
-    "pagination": "no",
-    "service": "no"
+    "service": "no",
+    "entityTableName": "word",
+    "pagination": "no"
 }

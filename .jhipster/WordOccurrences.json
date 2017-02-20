@@ -2,15 +2,6 @@
     "fluentMethods": true,
     "relationships": [
         {
-            "relationshipName": "word",
-            "otherEntityName": "word",
-            "relationshipType": "many-to-one",
-            "relationshipValidateRules": [
-                "required"
-            ],
-            "otherEntityField": "wordstring"
-        },
-        {
             "relationshipName": "review",
             "otherEntityName": "review",
             "relationshipType": "many-to-one",
@@ -24,6 +15,13 @@
         {
             "fieldName": "amountoccurrences",
             "fieldType": "Integer",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "word",
+            "fieldType": "String",
             "fieldValidateRules": [
                 "required"
             ]

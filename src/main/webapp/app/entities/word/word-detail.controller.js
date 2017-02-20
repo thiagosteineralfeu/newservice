@@ -5,9 +5,9 @@
         .module('myserviceApp')
         .controller('WordDetailController', WordDetailController);
 
-    WordDetailController.$inject = ['$scope', '$rootScope', '$stateParams', 'previousState', 'entity', 'Word', 'WordOccurrences', 'WordRank'];
+    WordDetailController.$inject = ['$scope', '$rootScope', '$stateParams', 'previousState', 'entity', 'Word', 'WordRank'];
 
-    function WordDetailController($scope, $rootScope, $stateParams, previousState, entity, Word, WordOccurrences, WordRank) {
+    function WordDetailController($scope, $rootScope, $stateParams, previousState, entity, Word, WordRank) {
         var vm = this;
 
         vm.word = entity;

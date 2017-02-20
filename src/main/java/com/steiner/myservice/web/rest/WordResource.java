@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +31,7 @@ public class WordResource {
     private final Logger log = LoggerFactory.getLogger(WordResource.class);
 
     private static final String ENTITY_NAME = "word";
-
+        
     private final WordRepository wordRepository;
 
     private final WordMapper wordMapper;
@@ -44,13 +42,10 @@ public class WordResource {
     }
 
     /**
-     * POST /words : Create a new word.
+     * POST  /words : Create a new word.
      *
      * @param wordDTO the wordDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the
-     * new wordDTO, with status 400 (Bad Request) if the word has already an ID
-     * or with status 500 (Internal Server Error) if the wordDTO couldnt be
-     * created
+     * @return the ResponseEntity with status 201 (Created) and with body the new wordDTO, or with status 400 (Bad Request) if the word has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/words")
@@ -64,53 +59,17 @@ public class WordResource {
         word = wordRepository.save(word);
         WordDTO result = wordMapper.wordToWordDTO(word);
         return ResponseEntity.created(new URI("/api/words/" + result.getId()))
-                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-                .body(result);
+            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+            .body(result);
     }
 
     /**
-     * POST /wordslist : Create new word based on list of words
-     *
-     * @param wordDTOlist the list od wordDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the
-     * new wordDTO, with status 400 (Bad Request) if the word has already an ID
-     * or with status 500 (Internal Server Error) if the wordDTO couldnt be
-     * created
-     * @throws URISyntaxException if the Location URI syntax is incorrect
-     */
-    @PostMapping("/wordslist")
-    @Timed
-    public ResponseEntity<List<WordDTO>> createWord(@Valid @RequestBody List<WordDTO> wordDTOlist) throws URISyntaxException {
-        log.debug("REST request to save a List of Words : {}", wordDTOlist);
-
-        for (Iterator<WordDTO> it = wordDTOlist
-                .iterator(); it.hasNext();) {
-            if (it.next().getId() != null) {
-                return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new word cannot already have an ID")).body(null);
-            }
-        }
-        List<WordDTO> resultlist;
-        resultlist = new ArrayList<WordDTO>();
-        for (Iterator<WordDTO> it = wordDTOlist
-                .iterator(); it.hasNext();) {
-            WordDTO wordDTO = it.next();
-            Word word = wordMapper.wordDTOToWord(wordDTO);
-            word = wordRepository.save(word);
-            WordDTO result = wordMapper.wordToWordDTO(word);
-            resultlist.add(result);
-        }
-        return ResponseEntity.ok()
-                .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, resultlist.toString()))
-                .body(resultlist);
-    }
-
-    /**
-     * PUT /words : Updates an existing word.
+     * PUT  /words : Updates an existing word.
      *
      * @param wordDTO the wordDTO to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated
-     * wordDTO, or with status 400 (Bad Request) if the wordDTO is not valid, or
-     * with status 500 (Internal Server Error) if the wordDTO couldnt be updated
+     * @return the ResponseEntity with status 200 (OK) and with body the updated wordDTO,
+     * or with status 400 (Bad Request) if the wordDTO is not valid,
+     * or with status 500 (Internal Server Error) if the wordDTO couldnt be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/words")
@@ -124,15 +83,14 @@ public class WordResource {
         word = wordRepository.save(word);
         WordDTO result = wordMapper.wordToWordDTO(word);
         return ResponseEntity.ok()
-                .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, wordDTO.getId().toString()))
-                .body(result);
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, wordDTO.getId().toString()))
+            .body(result);
     }
 
     /**
-     * GET /words : get all the words.
+     * GET  /words : get all the words.
      *
-     * @return the ResponseEntity with status 200 (OK) and the list of words in
-     * body
+     * @return the ResponseEntity with status 200 (OK) and the list of words in body
      */
     @GetMapping("/words")
     @Timed
@@ -143,11 +101,10 @@ public class WordResource {
     }
 
     /**
-     * GET /words/:id : get the "id" word.
+     * GET  /words/:id : get the "id" word.
      *
      * @param id the id of the wordDTO to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the
-     * wordDTO, or with status 404 (Not Found)
+     * @return the ResponseEntity with status 200 (OK) and with body the wordDTO, or with status 404 (Not Found)
      */
     @GetMapping("/words/{id}")
     @Timed
@@ -159,26 +116,7 @@ public class WordResource {
     }
 
     /**
-     * GET /words/:wordstring: get the "wordstring" word.
-     *
-     * @param wordstring the wordstring of the wordDTO to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the
-     * wordDTO, or with status 404 (Not Found)
-     */
-    @GetMapping("/wordstring/{wordstring}")
-    @Timed
-    public ResponseEntity<WordDTO> getWordstring(@PathVariable String wordstring) {
-        log.debug("REST request to get Word : {}", wordstring);
-        Optional<Word> existingWord = wordRepository.findByWordstring(wordstring);
-        WordDTO wordDTO = null;
-        if (existingWord.isPresent()) {
-            wordDTO = wordMapper.wordToWordDTO(existingWord.get());
-        }
-        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(wordDTO));
-    }
-
-    /**
-     * DELETE /words/:id : delete the "id" word.
+     * DELETE  /words/:id : delete the "id" word.
      *
      * @param id the id of the wordDTO to delete
      * @return the ResponseEntity with status 200 (OK)

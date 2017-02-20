@@ -5,9 +5,9 @@
         .module('myserviceApp')
         .controller('WordController', WordController);
 
-    WordController.$inject = ['$scope', '$state', 'Word'];
+    WordController.$inject = ['Word'];
 
-    function WordController ($scope, $state, Word) {
+    function WordController(Word) {
         var vm = this;
 
         vm.words = [];

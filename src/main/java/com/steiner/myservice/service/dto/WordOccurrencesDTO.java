@@ -17,9 +17,8 @@ public class WordOccurrencesDTO implements Serializable {
     @NotNull
     private Integer amountoccurrences;
 
-    private Long wordId;
-
-    private String wordWordstring;
+    @NotNull
+    private String word;
 
     private Long reviewId;
 
@@ -37,21 +36,12 @@ public class WordOccurrencesDTO implements Serializable {
     public void setAmountoccurrences(Integer amountoccurrences) {
         this.amountoccurrences = amountoccurrences;
     }
-
-    public Long getWordId() {
-        return wordId;
+    public String getWord() {
+        return word;
     }
 
-    public void setWordId(Long wordId) {
-        this.wordId = wordId;
-    }
-
-    public String getWordWordstring() {
-        return wordWordstring;
-    }
-
-    public void setWordWordstring(String wordWordstring) {
-        this.wordWordstring = wordWordstring;
+    public void setWord(String word) {
+        this.word = word;
     }
 
     public Long getReviewId() {
@@ -88,6 +78,7 @@ public class WordOccurrencesDTO implements Serializable {
         return "WordOccurrencesDTO{" +
             "id=" + id +
             ", amountoccurrences='" + amountoccurrences + "'" +
+            ", word='" + word + "'" +
             '}';
     }
 }
