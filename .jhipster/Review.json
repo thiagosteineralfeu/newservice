@@ -19,7 +19,9 @@
         {
             "relationshipName": "reviewVector",
             "otherEntityName": "reviewVector",
-            "relationshipType": "one-to-many",
+            "relationshipType": "one-to-one",
+            "otherEntityField": "id",
+            "ownerSide": true,
             "otherEntityRelationshipName": "review"
         }
     ],

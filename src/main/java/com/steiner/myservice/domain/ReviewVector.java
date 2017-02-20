@@ -7,13 +7,11 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * A ReviewVector.
  */
 @Entity
-@Transactional
 @Table(name = "review_vector")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ReviewVector implements Serializable {
@@ -29,14 +27,6 @@ public class ReviewVector implements Serializable {
     @Lob
     @Column(name = "vector", nullable = false)
     private String vector;
-
-    @ManyToOne(optional = false)
-    @NotNull
-    private Review review;
-
-    @ManyToOne(optional = false)
-    @NotNull
-    private RankSnapshot rankSnapshot;
 
     public Long getId() {
         return id;
@@ -57,32 +47,6 @@ public class ReviewVector implements Serializable {
 
     public void setVector(String vector) {
         this.vector = vector;
-    }
-
-    public Review getReview() {
-        return review;
-    }
-
-    public ReviewVector review(Review review) {
-        this.review = review;
-        return this;
-    }
-
-    public void setReview(Review review) {
-        this.review = review;
-    }
-
-    public RankSnapshot getRankSnapshot() {
-        return rankSnapshot;
-    }
-
-    public ReviewVector rankSnapshot(RankSnapshot rankSnapshot) {
-        this.rankSnapshot = rankSnapshot;
-        return this;
-    }
-
-    public void setRankSnapshot(RankSnapshot rankSnapshot) {
-        this.rankSnapshot = rankSnapshot;
     }
 
     @Override

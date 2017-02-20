@@ -5,9 +5,9 @@
         .module('myserviceApp')
         .controller('RankSnapshotDetailController', RankSnapshotDetailController);
 
-    RankSnapshotDetailController.$inject = ['$scope', '$rootScope', '$stateParams', 'previousState', 'entity', 'RankSnapshot', 'WordRank', 'ReviewVector'];
+    RankSnapshotDetailController.$inject = ['$scope', '$rootScope', '$stateParams', 'previousState', 'entity', 'RankSnapshot', 'WordRank'];
 
-    function RankSnapshotDetailController($scope, $rootScope, $stateParams, previousState, entity, RankSnapshot, WordRank, ReviewVector) {
+    function RankSnapshotDetailController($scope, $rootScope, $stateParams, previousState, entity, RankSnapshot, WordRank) {
         var vm = this;
 
         vm.rankSnapshot = entity;

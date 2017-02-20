@@ -16,7 +16,6 @@
     <include file="classpath:config/liquibase/changelog/20170212235925_added_entity_constraints_Review.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170212235925_added_entity_constraints_WordOccurrences.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170212235925_added_entity_constraints_WordRank.xml" relativeToChangelogFile="false"/>
-    <include file="classpath:config/liquibase/changelog/20170215170140_added_entity_constraints_ReviewVector.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <include file="classpath:config/liquibase/changelog/20170214152428_changelog.xml" relativeToChangelogFile="false"/> 
 </databaseChangeLog>

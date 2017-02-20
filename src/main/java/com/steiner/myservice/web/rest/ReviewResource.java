@@ -2,10 +2,9 @@ package com.steiner.myservice.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.steiner.myservice.domain.Review;
-import com.steiner.myservice.domain.Word;
 
 import com.steiner.myservice.repository.ReviewRepository;
-import com.steiner.myservice.repository.WordRepository;
+import com.steiner.myservice.repository.ReviewVectorRepository;
 import com.steiner.myservice.service.CsvService;
 import com.steiner.myservice.service.ReviewService;
 import com.steiner.myservice.web.rest.util.HeaderUtil;
@@ -21,40 +20,45 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * REST controller for managing Review.
  */
 @RestController
 @RequestMapping("/api")
+@Transactional
 public class ReviewResource {
 
     private final Logger log = LoggerFactory.getLogger(ReviewResource.class);
 
     private static final String ENTITY_NAME = "review";
 
-    
-
     private final ReviewRepository reviewRepository;
-
-
+    
+    private final ReviewVectorRepository reviewVectorRepository;
+    
     private final CsvService csvService;
 
     private final ReviewService reviewService;
 
     private final ReviewMapper reviewMapper;
 
-    public ReviewResource(ReviewRepository reviewRepository, ReviewMapper reviewMapper, ReviewService reviewService,
-            CsvService csvService) {
+    public ReviewResource(ReviewRepository reviewRepository, ReviewMapper reviewMapper,
+            ReviewService reviewService,
+            CsvService csvService,ReviewVectorRepository reviewVectorRepository) {
         this.reviewRepository = reviewRepository;
         this.reviewMapper = reviewMapper;
         this.reviewService = reviewService;
         this.csvService = csvService;
+        this.reviewVectorRepository=reviewVectorRepository;
 
     }
+
 
     /**
      * POST /reviews : Create a new review.
@@ -99,7 +103,7 @@ public class ReviewResource {
         }
 
         Long bookId = reviewDTO.getBookId();
-        String path = reviewDTO.getReviewstring();
+        String path = reviewDTO.getReviewtext();
 
         try {
             csvService.processReviewFromCsvFile(path, bookId);
@@ -109,15 +113,13 @@ public class ReviewResource {
         return ResponseEntity.ok()
                 .body(null);
     }
-
     /**
-     * PUT /reviews : Updates an existing review.
+     * PUT  /reviews : Updates an existing review.
      *
      * @param reviewDTO the reviewDTO to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated
-     * reviewDTO, or with status 400 (Bad Request) if the reviewDTO is not
-     * valid, or with status 500 (Internal Server Error) if the reviewDTO
-     * couldnt be updated
+     * @return the ResponseEntity with status 200 (OK) and with body the updated reviewDTO,
+     * or with status 400 (Bad Request) if the reviewDTO is not valid,
+     * or with status 500 (Internal Server Error) if the reviewDTO couldnt be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/reviews")
@@ -131,15 +133,14 @@ public class ReviewResource {
         review = reviewRepository.save(review);
         ReviewDTO result = reviewMapper.reviewToReviewDTO(review);
         return ResponseEntity.ok()
-                .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, reviewDTO.getId().toString()))
-                .body(result);
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, reviewDTO.getId().toString()))
+            .body(result);
     }
 
     /**
-     * GET /reviews : get all the reviews.
+     * GET  /reviews : get all the reviews.
      *
-     * @return the ResponseEntity with status 200 (OK) and the list of reviews
-     * in body
+     * @return the ResponseEntity with status 200 (OK) and the list of reviews in body
      */
     @GetMapping("/reviews")
     @Timed
@@ -150,11 +151,10 @@ public class ReviewResource {
     }
 
     /**
-     * GET /reviews/:id : get the "id" review.
+     * GET  /reviews/:id : get the "id" review.
      *
      * @param id the id of the reviewDTO to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the
-     * reviewDTO, or with status 404 (Not Found)
+     * @return the ResponseEntity with status 200 (OK) and with body the reviewDTO, or with status 404 (Not Found)
      */
     @GetMapping("/reviews/{id}")
     @Timed
@@ -166,7 +166,7 @@ public class ReviewResource {
     }
 
     /**
-     * DELETE /reviews/:id : delete the "id" review.
+     * DELETE  /reviews/:id : delete the "id" review.
      *
      * @param id the id of the reviewDTO to delete
      * @return the ResponseEntity with status 200 (OK)

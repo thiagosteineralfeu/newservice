@@ -3,8 +3,6 @@ package com.steiner.myservice.service.dto;
 
 import javax.validation.constraints.*;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Objects;
 import javax.persistence.Lob;
 
@@ -19,12 +17,6 @@ public class ReviewVectorDTO implements Serializable {
     @Lob
     private String vector;
 
-    private Long reviewId;
-
-    private Long rankSnapshotId;
-
-    private String rankSnapshotEpoch;
-
     public Long getId() {
         return id;
     }
@@ -38,30 +30,6 @@ public class ReviewVectorDTO implements Serializable {
 
     public void setVector(String vector) {
         this.vector = vector;
-    }
-
-    public Long getReviewId() {
-        return reviewId;
-    }
-
-    public void setReviewId(Long reviewId) {
-        this.reviewId = reviewId;
-    }
-
-    public Long getRankSnapshotId() {
-        return rankSnapshotId;
-    }
-
-    public void setRankSnapshotId(Long rankSnapshotId) {
-        this.rankSnapshotId = rankSnapshotId;
-    }
-
-    public String getRankSnapshotEpoch() {
-        return rankSnapshotEpoch;
-    }
-
-    public void setRankSnapshotEpoch(String rankSnapshotEpoch) {
-        this.rankSnapshotEpoch = rankSnapshotEpoch;
     }
 
     @Override

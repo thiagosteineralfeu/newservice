@@ -22,6 +22,7 @@
                     <th><span>Reviewstring</span></th>
                     <th><span>Reviewtext</span></th>
                     <th><span>Book</span></th>
+                    <th><span>Review Vector</span></th>
                     <th></th>
                 </tr>
             </thead>
@@ -32,6 +33,9 @@
                     <td>{{review.reviewtext}}</td>
                     <td>
                         <a ui-sref="book-detail({id:review.bookId})">{{review.bookId}}</a>
+                    </td>
+                    <td>
+                        <a ui-sref="review-vector-detail({id:review.reviewVectorId})">{{review.reviewVectorId}}</a>
                     </td>
                     <td class="text-right">
                         <div class="btn-group flex-btn-group-container">

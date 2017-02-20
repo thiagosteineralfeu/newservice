@@ -4,7 +4,7 @@ describe('Controller Tests', function() {
 
     describe('RankSnapshot Management Detail Controller', function() {
         var $scope, $rootScope;
-        var MockEntity, MockPreviousState, MockRankSnapshot, MockWordRank, MockReviewVector;
+        var MockEntity, MockPreviousState, MockRankSnapshot, MockWordRank;
         var createController;
 
         beforeEach(inject(function($injector) {
@@ -14,7 +14,6 @@ describe('Controller Tests', function() {
             MockPreviousState = jasmine.createSpy('MockPreviousState');
             MockRankSnapshot = jasmine.createSpy('MockRankSnapshot');
             MockWordRank = jasmine.createSpy('MockWordRank');
-            MockReviewVector = jasmine.createSpy('MockReviewVector');
             
 
             var locals = {
@@ -23,8 +22,7 @@ describe('Controller Tests', function() {
                 'entity': MockEntity,
                 'previousState': MockPreviousState,
                 'RankSnapshot': MockRankSnapshot,
-                'WordRank': MockWordRank,
-                'ReviewVector': MockReviewVector
+                'WordRank': MockWordRank
             };
             createController = function() {
                 $injector.get('$controller')("RankSnapshotDetailController", locals);

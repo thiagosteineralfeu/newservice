@@ -1,25 +1,6 @@
 {
     "fluentMethods": true,
-    "relationships": [
-        {
-            "relationshipName": "review",
-            "otherEntityName": "review",
-            "relationshipType": "many-to-one",
-            "relationshipValidateRules": [
-                "required"
-            ],
-            "otherEntityField": "id"
-        },
-        {
-            "relationshipName": "rankSnapshot",
-            "otherEntityName": "rankSnapshot",
-            "relationshipType": "many-to-one",
-            "relationshipValidateRules": [
-                "required"
-            ],
-            "otherEntityField": "epoc"
-        }
-    ],
+    "relationships": [],
     "fields": [
         {
             "fieldName": "vector",

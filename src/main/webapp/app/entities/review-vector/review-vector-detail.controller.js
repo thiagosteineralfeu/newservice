@@ -5,9 +5,9 @@
         .module('myserviceApp')
         .controller('ReviewVectorDetailController', ReviewVectorDetailController);
 
-    ReviewVectorDetailController.$inject = ['$scope', '$rootScope', '$stateParams', 'previousState', 'DataUtils', 'entity', 'ReviewVector', 'Review', 'RankSnapshot'];
+    ReviewVectorDetailController.$inject = ['$scope', '$rootScope', '$stateParams', 'previousState', 'DataUtils', 'entity', 'ReviewVector'];
 
-    function ReviewVectorDetailController($scope, $rootScope, $stateParams, previousState, DataUtils, entity, ReviewVector, Review, RankSnapshot) {
+    function ReviewVectorDetailController($scope, $rootScope, $stateParams, previousState, DataUtils, entity, ReviewVector) {
         var vm = this;
 
         vm.reviewVector = entity;

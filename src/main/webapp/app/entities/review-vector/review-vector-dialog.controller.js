@@ -5,9 +5,9 @@
         .module('myserviceApp')
         .controller('ReviewVectorDialogController', ReviewVectorDialogController);
 
-    ReviewVectorDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'DataUtils', 'entity', 'ReviewVector', 'Review', 'RankSnapshot'];
+    ReviewVectorDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'DataUtils', 'entity', 'ReviewVector'];
 
-    function ReviewVectorDialogController ($timeout, $scope, $stateParams, $uibModalInstance, DataUtils, entity, ReviewVector, Review, RankSnapshot) {
+    function ReviewVectorDialogController ($timeout, $scope, $stateParams, $uibModalInstance, DataUtils, entity, ReviewVector) {
         var vm = this;
 
         vm.reviewVector = entity;
@@ -15,8 +15,6 @@
         vm.byteSize = DataUtils.byteSize;
         vm.openFile = DataUtils.openFile;
         vm.save = save;
-        vm.reviews = Review.query();
-        vm.ranksnapshots = RankSnapshot.query();
 
         $timeout(function (){
             angular.element('.form-group:eq(1)>input').focus();

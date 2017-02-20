@@ -35,11 +35,6 @@ public class RankSnapshot implements Serializable {
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<WordRank> wordRanks = new HashSet<>();
 
-    @OneToMany(mappedBy = "rankSnapshot")
-    @JsonIgnore
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    private Set<ReviewVector> reviewVectors = new HashSet<>();
-
     public Long getId() {
         return id;
     }
@@ -84,31 +79,6 @@ public class RankSnapshot implements Serializable {
 
     public void setWordRanks(Set<WordRank> wordRanks) {
         this.wordRanks = wordRanks;
-    }
-
-    public Set<ReviewVector> getReviewVectors() {
-        return reviewVectors;
-    }
-
-    public RankSnapshot reviewVectors(Set<ReviewVector> reviewVectors) {
-        this.reviewVectors = reviewVectors;
-        return this;
-    }
-
-    public RankSnapshot addReviewVector(ReviewVector reviewVector) {
-        this.reviewVectors.add(reviewVector);
-        reviewVector.setRankSnapshot(this);
-        return this;
-    }
-
-    public RankSnapshot removeReviewVector(ReviewVector reviewVector) {
-        this.reviewVectors.remove(reviewVector);
-        reviewVector.setRankSnapshot(null);
-        return this;
-    }
-
-    public void setReviewVectors(Set<ReviewVector> reviewVectors) {
-        this.reviewVectors = reviewVectors;
     }
 
     @Override

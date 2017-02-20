@@ -3,8 +3,6 @@ package com.steiner.myservice.web.rest;
 import com.steiner.myservice.MyserviceApp;
 
 import com.steiner.myservice.domain.ReviewVector;
-import com.steiner.myservice.domain.Review;
-import com.steiner.myservice.domain.RankSnapshot;
 import com.steiner.myservice.repository.ReviewVectorRepository;
 import com.steiner.myservice.service.dto.ReviewVectorDTO;
 import com.steiner.myservice.service.mapper.ReviewVectorMapper;
@@ -40,11 +38,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MyserviceApp.class)
-@Transactional
 public class ReviewVectorResourceIntTest {
 
-    private static final String DEFAULT_VECTOR = "aaaaaaaaaa";
-    private static final String UPDATED_VECTOR = "bbbbbbbbbb";
+    private static final String DEFAULT_VECTOR = "AAAAAAAAAA";
+    private static final String UPDATED_VECTOR = "BBBBBBBBBB";
 
     @Autowired
     private ReviewVectorRepository reviewVectorRepository;
@@ -87,16 +84,6 @@ public class ReviewVectorResourceIntTest {
     public static ReviewVector createEntity(EntityManager em) {
         ReviewVector reviewVector = new ReviewVector()
                 .vector(DEFAULT_VECTOR);
-        // Add required entity
-        Review review = ReviewResourceIntTest.createEntity(em);
-        em.persist(review);
-        em.flush();
-        reviewVector.setReview(review);
-        // Add required entity
-        RankSnapshot rankSnapshot = RankSnapshotResourceIntTest.createEntity(em);
-        em.persist(rankSnapshot);
-        em.flush();
-        reviewVector.setRankSnapshot(rankSnapshot);
         return reviewVector;
     }
 

@@ -24,6 +24,8 @@ public class ReviewDTO implements Serializable {
 
     private Long bookId;
 
+    private Long reviewVectorId;
+
     public Long getId() {
         return id;
     }
@@ -52,6 +54,14 @@ public class ReviewDTO implements Serializable {
 
     public void setBookId(Long bookId) {
         this.bookId = bookId;
+    }
+
+    public Long getReviewVectorId() {
+        return reviewVectorId;
+    }
+
+    public void setReviewVectorId(Long reviewVectorId) {
+        this.reviewVectorId = reviewVectorId;
     }
 
     @Override

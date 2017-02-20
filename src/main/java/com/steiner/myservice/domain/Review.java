@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * A Review.
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Entity
 @Table(name = "review")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Transactional
 public class Review implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -46,10 +44,9 @@ public class Review implements Serializable {
     @NotNull
     private Book book;
 
-    @OneToMany(mappedBy = "review")
-    @JsonIgnore
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    private Set<ReviewVector> reviewVectors = new HashSet<>();
+    @OneToOne
+    @JoinColumn(unique = true)
+    private ReviewVector reviewVector;
 
     public Long getId() {
         return id;
@@ -123,29 +120,17 @@ public class Review implements Serializable {
         this.book = book;
     }
 
-    public Set<ReviewVector> getReviewVectors() {
-        return reviewVectors;
+    public ReviewVector getReviewVector() {
+        return reviewVector;
     }
 
-    public Review reviewVectors(Set<ReviewVector> reviewVectors) {
-        this.reviewVectors = reviewVectors;
+    public Review reviewVector(ReviewVector reviewVector) {
+        this.reviewVector = reviewVector;
         return this;
     }
 
-    public Review addReviewVector(ReviewVector reviewVector) {
-        this.reviewVectors.add(reviewVector);
-        reviewVector.setReview(this);
-        return this;
-    }
-
-    public Review removeReviewVector(ReviewVector reviewVector) {
-        this.reviewVectors.remove(reviewVector);
-        reviewVector.setReview(null);
-        return this;
-    }
-
-    public void setReviewVectors(Set<ReviewVector> reviewVectors) {
-        this.reviewVectors = reviewVectors;
+    public void setReviewVector(ReviewVector reviewVector) {
+        this.reviewVector = reviewVector;
     }
 
     @Override

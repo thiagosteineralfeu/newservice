@@ -17,7 +17,6 @@ public interface RankSnapshotMapper {
     List<RankSnapshotDTO> rankSnapshotsToRankSnapshotDTOs(List<RankSnapshot> rankSnapshots);
 
     @Mapping(target = "wordRanks", ignore = true)
-    @Mapping(target = "reviewVectors", ignore = true)
     RankSnapshot rankSnapshotDTOToRankSnapshot(RankSnapshotDTO rankSnapshotDTO);
 
     List<RankSnapshot> rankSnapshotDTOsToRankSnapshots(List<RankSnapshotDTO> rankSnapshotDTOs);

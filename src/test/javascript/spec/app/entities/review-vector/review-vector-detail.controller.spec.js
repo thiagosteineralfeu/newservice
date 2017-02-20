@@ -4,7 +4,7 @@ describe('Controller Tests', function() {
 
     describe('ReviewVector Management Detail Controller', function() {
         var $scope, $rootScope;
-        var MockEntity, MockPreviousState, MockReviewVector, MockReview, MockRankSnapshot;
+        var MockEntity, MockPreviousState, MockReviewVector;
         var createController;
 
         beforeEach(inject(function($injector) {
@@ -13,8 +13,6 @@ describe('Controller Tests', function() {
             MockEntity = jasmine.createSpy('MockEntity');
             MockPreviousState = jasmine.createSpy('MockPreviousState');
             MockReviewVector = jasmine.createSpy('MockReviewVector');
-            MockReview = jasmine.createSpy('MockReview');
-            MockRankSnapshot = jasmine.createSpy('MockRankSnapshot');
             
 
             var locals = {
@@ -22,9 +20,7 @@ describe('Controller Tests', function() {
                 '$rootScope': $rootScope,
                 'entity': MockEntity,
                 'previousState': MockPreviousState,
-                'ReviewVector': MockReviewVector,
-                'Review': MockReview,
-                'RankSnapshot': MockRankSnapshot
+                'ReviewVector': MockReviewVector
             };
             createController = function() {
                 $injector.get('$controller')("ReviewVectorDetailController", locals);

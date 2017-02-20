@@ -6,12 +6,6 @@
             "relationshipName": "wordRank",
             "otherEntityName": "wordRank",
             "otherEntityRelationshipName": "rankSnapshot"
-        },
-        {
-            "relationshipName": "reviewVector",
-            "otherEntityName": "reviewVector",
-            "relationshipType": "one-to-many",
-            "otherEntityRelationshipName": "rankSnapshot"
         }
     ],
     "fields": [

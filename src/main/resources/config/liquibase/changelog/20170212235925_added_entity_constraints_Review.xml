@@ -14,5 +14,11 @@
                                  referencedColumnNames="id"
                                  referencedTableName="book"/>
 
+        <addForeignKeyConstraint baseColumnNames="review_vector_id"
+                                 baseTableName="review"
+                                 constraintName="fk_review_review_vector_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="review_vector"/>
+
     </changeSet>
 </databaseChangeLog>

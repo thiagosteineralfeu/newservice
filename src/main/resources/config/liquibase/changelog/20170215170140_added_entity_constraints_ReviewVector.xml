@@ -8,12 +8,6 @@
     -->
     <changeSet id="20170215170140-2" author="jhipster">
         
-        <addForeignKeyConstraint baseColumnNames="review_id"
-                                 baseTableName="review_vector"
-                                 constraintName="fk_review_vector_review_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="review"/>
-
         <addForeignKeyConstraint baseColumnNames="rank_snapshot_id"
                                  baseTableName="review_vector"
                                  constraintName="fk_review_vector_rank_snapshot_id"

@@ -5,16 +5,15 @@
         .module('myserviceApp')
         .controller('RankSnapshotDialogController', RankSnapshotDialogController);
 
-    RankSnapshotDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'entity', 'RankSnapshot', 'WordRank', 'ReviewVector'];
+    RankSnapshotDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'entity', 'RankSnapshot', 'WordRank'];
 
-    function RankSnapshotDialogController ($timeout, $scope, $stateParams, $uibModalInstance, entity, RankSnapshot, WordRank, ReviewVector) {
+    function RankSnapshotDialogController ($timeout, $scope, $stateParams, $uibModalInstance, entity, RankSnapshot, WordRank) {
         var vm = this;
 
         vm.rankSnapshot = entity;
         vm.clear = clear;
         vm.save = save;
         vm.wordranks = WordRank.query();
-        vm.reviewvectors = ReviewVector.query();
 
         $timeout(function (){
             angular.element('.form-group:eq(1)>input').focus();

@@ -25,30 +25,6 @@
             </div>
         </div>
 
-        <div class="form-group">
-            <label for="field_review">Review</label>
-            <select class="form-control" id="field_review" name="review" ng-model="vm.reviewVector.reviewId" ng-options="review.id as review.id for review in vm.reviews"             required>
-                <option value=""></option>
-            </select>
-        </div>
-        <div ng-show="editForm.review.$invalid">
-            <p class="help-block"
-                ng-show="editForm.review.$error.required">
-                This field is required.
-            </p>
-        </div>
-        <div class="form-group">
-            <label for="field_rankSnapshot">Rank Snapshot</label>
-            <select class="form-control" id="field_rankSnapshot" name="rankSnapshot" ng-model="vm.reviewVector.rankSnapshotId" ng-options="rankSnapshot.id as rankSnapshot.epoc for rankSnapshot in vm.ranksnapshots"             required>
-                <option value=""></option>
-            </select>
-        </div>
-        <div ng-show="editForm.rankSnapshot.$invalid">
-            <p class="help-block"
-                ng-show="editForm.rankSnapshot.$error.required">
-                This field is required.
-            </p>
-        </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="vm.clear()">

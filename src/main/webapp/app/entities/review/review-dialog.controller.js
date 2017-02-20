@@ -5,9 +5,9 @@
         .module('myserviceApp')
         .controller('ReviewDialogController', ReviewDialogController);
 
-    ReviewDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'DataUtils', 'entity', 'Review', 'WordOccurrences', 'Book', 'ReviewVector'];
+    ReviewDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', '$q', 'DataUtils', 'entity', 'Review', 'WordOccurrences', 'Book', 'ReviewVector'];
 
-    function ReviewDialogController ($timeout, $scope, $stateParams, $uibModalInstance, DataUtils, entity, Review, WordOccurrences, Book, ReviewVector) {
+    function ReviewDialogController ($timeout, $scope, $stateParams, $uibModalInstance, $q, DataUtils, entity, Review, WordOccurrences, Book, ReviewVector) {
         var vm = this;
 
         vm.review = entity;
@@ -17,7 +17,15 @@
         vm.save = save;
         vm.wordoccurrences = WordOccurrences.query();
         vm.books = Book.query();
-        vm.reviewvectors = ReviewVector.query();
+        vm.reviewvectors = ReviewVector.query({filter: 'review-is-null'});
+        $q.all([vm.review.$promise, vm.reviewvectors.$promise]).then(function() {
+            if (!vm.review.reviewVectorId) {
+                return $q.reject();
+            }
+            return ReviewVector.get({id : vm.review.reviewVectorId}).$promise;
+        }).then(function(reviewVector) {
+            vm.reviewvectors.push(reviewVector);
+        });
 
         $timeout(function (){
             angular.element('.form-group:eq(1)>input').focus();
