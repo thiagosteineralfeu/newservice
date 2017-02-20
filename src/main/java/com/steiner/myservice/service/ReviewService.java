@@ -22,7 +22,6 @@ public class ReviewService {
 
     private final BookRepository bookRepository;
     private final ReviewRepository reviewRepository;
-    private final WordRepository wordRepository;
     private final WordOccurrencesRepository wordOccurrencesRepository;
 
     public ReviewService(ReviewRepository reviewRepository,
@@ -30,20 +29,18 @@ public class ReviewService {
             WordOccurrencesRepository wordOccurrencesRepository,
             BookRepository bookRepository) {
         this.reviewRepository = reviewRepository;
-        this.wordRepository = wordRepository;
         this.wordOccurrencesRepository = wordOccurrencesRepository;
         this.bookRepository = bookRepository;
     }
 
-    public Review createReview(ReviewDTO reviewDTO, HashMap<String, Long> wordIdMap) {
+    public Review createReview(ReviewDTO reviewDTO) {
         Review review = new Review();
         UtilService utilService = new UtilService();
         WordoccurrencesService wordoccurrencesService
-                = new WordoccurrencesService(wordRepository,
-                        wordOccurrencesRepository);
+                = new WordoccurrencesService(wordOccurrencesRepository);
         Book book = bookRepository.findOne(reviewDTO.getBookId());
         review.setBook(book);
-        String cleanreviewstring = utilService.cleanString(reviewDTO.getReviewstring());
+        String cleanreviewstring = (reviewDTO.getReviewstring());
         String cleanreviewtext = utilService.cleanString(reviewDTO.getReviewtext());
         //Todo test reviewtext null or empity
         review.setReviewstring(cleanreviewstring);
@@ -51,7 +48,7 @@ public class ReviewService {
         Map<String, Integer> myMap;
         myMap = utilService.CountWords(cleanreviewtext);
         review = reviewRepository.save(review);
-        wordoccurrencesService.updateWordOccurrences(review, myMap, wordIdMap);
+        wordoccurrencesService.updateWordOccurrences(review, myMap);
         log.debug("Created Review: {}", review);
         return review;
     }

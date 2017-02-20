@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * A WordOccurrences.
@@ -14,6 +15,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "word_occurrences")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Transactional
 public class WordOccurrences implements Serializable {
 
     private static final long serialVersionUID = 1L;

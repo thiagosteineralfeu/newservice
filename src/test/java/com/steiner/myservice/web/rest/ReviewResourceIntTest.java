@@ -55,9 +55,6 @@ public class ReviewResourceIntTest {
     private ReviewRepository reviewRepository;
 
     @Autowired
-    private WordRepository wordRepository;
-
-    @Autowired
     private ReviewMapper reviewMapper;
 
     @Autowired
@@ -86,7 +83,7 @@ public class ReviewResourceIntTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         ReviewResource reviewResource = new ReviewResource(reviewRepository,
-                reviewMapper, reviewService, wordRepository, csvService);
+                reviewMapper, reviewService,  csvService);
         this.restReviewMockMvc = MockMvcBuilders.standaloneSetup(reviewResource)
                 .setCustomArgumentResolvers(pageableArgumentResolver)
                 .setControllerAdvice(exceptionTranslator)

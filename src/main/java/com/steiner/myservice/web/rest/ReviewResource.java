@@ -36,11 +36,10 @@ public class ReviewResource {
 
     private static final String ENTITY_NAME = "review";
 
-    private static final HashMap<String, Long> wordIdMap = new HashMap<>();
+    
 
     private final ReviewRepository reviewRepository;
 
-    private final WordRepository wordRepository;
 
     private final CsvService csvService;
 
@@ -49,21 +48,11 @@ public class ReviewResource {
     private final ReviewMapper reviewMapper;
 
     public ReviewResource(ReviewRepository reviewRepository, ReviewMapper reviewMapper, ReviewService reviewService,
-            WordRepository wordRepository, CsvService csvService) {
+            CsvService csvService) {
         this.reviewRepository = reviewRepository;
         this.reviewMapper = reviewMapper;
         this.reviewService = reviewService;
-        this.wordRepository = wordRepository;
         this.csvService = csvService;
-
-        //HashMap<String, Long> wordIdMap = new HashMap<>();
-        List<Word> wordList = wordRepository.findAll();
-        if (wordList != null) {
-            wordList.forEach((Word word) -> {
-                wordIdMap.put(word.getWordstring(), word.getId());
-            });
-
-        }
 
     }
 
@@ -85,7 +74,7 @@ public class ReviewResource {
         }
         //Review review = reviewMapper.reviewDTOToReview(reviewDTO);
         //review = reviewRepository.save(review);
-        Review review = reviewService.createReview(reviewDTO, wordIdMap);
+        Review review = reviewService.createReview(reviewDTO);
         ReviewDTO result = reviewMapper.reviewToReviewDTO(review);
         return ResponseEntity.created(new URI("/api/reviews/" + result.getId()))
                 .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
@@ -113,7 +102,7 @@ public class ReviewResource {
         String path = reviewDTO.getReviewstring();
 
         try {
-            csvService.processReviewFromCsvFile(path, bookId, wordIdMap);
+            csvService.processReviewFromCsvFile(path, bookId);
         } catch (IOException ex) {
             log.warn("Error in createReviewFromCSVFile", ex);
         }

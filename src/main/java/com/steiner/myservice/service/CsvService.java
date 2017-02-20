@@ -33,27 +33,23 @@ public class CsvService {
 
     private final ReviewRepository reviewRepository;
     private final BookRepository bookRepository;
-    private final WordRepository wordRepository;
     private final WordOccurrencesRepository wordOccurrencesRepository;
 
     public CsvService(ReviewRepository reviewRepository, BookRepository bookRepository,
-            WordRepository wordRepository, WordOccurrencesRepository wordOccurrencesRepository) {
+            WordOccurrencesRepository wordOccurrencesRepository) {
         this.reviewRepository = reviewRepository;
         this.bookRepository = bookRepository;
-        this.wordRepository = wordRepository;
         this.wordOccurrencesRepository = wordOccurrencesRepository;
     }
 
     @Async
-    public void processReviewFromCsvFile(String csvfilepath, Long bookId,
-            HashMap<String, Long> wordIdMap) throws FileNotFoundException, IOException {
+    public void processReviewFromCsvFile(String csvfilepath, Long bookId) throws FileNotFoundException, IOException {
 
         String mystring;
         UtilService utilService = new UtilService();
         Pattern myPatterCompileColumnCatcher
                 = Pattern.compile(".*?\\t.*?\\t.*?\\t(\\\".*\\\")");
         int line = 0;
-        HashMap<String, Long> mywordIdMap = wordIdMap;
         // Start time
         long startTime = System.nanoTime();
         Book book;
@@ -78,20 +74,9 @@ public class CsvService {
                             mystring = utilService.cleanString(mystring);
                             CreatereviewcsvService createreviewcsvService
                                     = new CreatereviewcsvService(reviewRepository,
-                                            wordRepository,
                                             wordOccurrencesRepository,
                                             bookRepository);
-                            createreviewcsvService.createreviewcsv(mystring, book, wordIdMap);
-
-                        }
-                    }
-                    if (line % 1000 == 999) {
-                        mywordIdMap = new HashMap<>();
-                        List<Word> wordList = wordRepository.findAll();
-                        if (wordList != null) {
-                            for (Word word : wordList) {
-                                mywordIdMap.put(word.getWordstring(), word.getId());
-                            }
+                            createreviewcsvService.createreviewcsv(mystring, book);
 
                         }
                     }

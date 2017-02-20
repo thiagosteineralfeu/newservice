@@ -20,23 +20,19 @@ public class CreatereviewcsvService {
 
     private final Logger log = LoggerFactory.getLogger(CreatereviewcsvService.class);
 
-    private final BookRepository bookRepository;
     private final ReviewRepository reviewRepository;
-    private final WordRepository wordRepository;
+ 
     private final WordOccurrencesRepository wordOccurrencesRepository;
 
     public CreatereviewcsvService(ReviewRepository reviewRepository,
-            WordRepository wordRepository,
             WordOccurrencesRepository wordOccurrencesRepository,
             BookRepository bookRepository) {
         this.reviewRepository = reviewRepository;
-        this.wordRepository = wordRepository;
         this.wordOccurrencesRepository = wordOccurrencesRepository;
-        this.bookRepository = bookRepository;
-    }
+           }
 
     @Async
-    public void createreviewcsv(String mystring, Book book, HashMap<String, Long> wordIdMap) {
+    public void createreviewcsv(String mystring, Book book) {
         UtilService utilService = new UtilService();
         Review newReview = new Review();
         newReview.setBook(book);
@@ -46,10 +42,8 @@ public class CreatereviewcsvService {
         myMap = utilService.CountWords(mystring);
         newReview = reviewRepository.save(newReview);
         WordoccurrencesService wordoccurrencesService
-                = new WordoccurrencesService(wordRepository,
-                        wordOccurrencesRepository);
-        reviewRepository.save(newReview);
-        wordoccurrencesService.updateWordOccurrences(newReview, myMap, wordIdMap);
+                = new WordoccurrencesService(wordOccurrencesRepository);
+        wordoccurrencesService.updateWordOccurrences(newReview, myMap);
 
     }
 

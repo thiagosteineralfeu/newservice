@@ -38,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MyserviceApp.class)
+@Transactional
 public class WordOccurrencesResourceIntTest {
 
     private static final Integer DEFAULT_AMOUNTOCCURRENCES = 1;
