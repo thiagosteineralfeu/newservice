@@ -76,18 +76,13 @@ public class CsvService {
                         mystring = mystring.trim();
                         if (mystring != null && !mystring.isEmpty()) {
                             mystring = utilService.cleanString(mystring);
-                            Review newReview = new Review();
-                            newReview.setBook(book);
-                            newReview.setReviewstring("text");
-                            newReview.setReviewtext(mystring);
-                            Map<String, Integer> myMap;
-                            myMap = utilService.CountWords(mystring);
-                            newReview = reviewRepository.save(newReview);
-                            WordoccurrencesService wordoccurrencesService
-                                    = new WordoccurrencesService(wordRepository,
-                                            wordOccurrencesRepository);
-                            reviewRepository.save(newReview);
-                            wordoccurrencesService.updateWordOccurrences(newReview, myMap, mywordIdMap);
+                            CreatereviewcsvService createreviewcsvService
+                                    = new CreatereviewcsvService(reviewRepository,
+                                            wordRepository,
+                                            wordOccurrencesRepository,
+                                            bookRepository);
+                            createreviewcsvService.createreviewcsv(mystring, book, wordIdMap);
+
                         }
                     }
                     if (line % 1000 == 999) {

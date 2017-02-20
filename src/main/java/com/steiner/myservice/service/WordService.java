@@ -24,15 +24,15 @@ public class WordService {
     public Word findOrSaveWord(String wordstring) {
         Word word = new Word();
         word.setWordstring(wordstring);
-        Optional<Word> existingWord=wordRepository.findByWordstring(wordstring);
-        if (!existingWord.isPresent()) {
+//        Optional<Word> existingWord=wordRepository.findByWordstring(wordstring);
+//        if (!existingWord.isPresent()) {
 
         word = wordRepository.save(word);
 
-        } else{
-            word=existingWord.get();
-        
-        }
+//        } else{
+//            word=existingWord.get();
+//        
+//        }
         return word;
     }
 
