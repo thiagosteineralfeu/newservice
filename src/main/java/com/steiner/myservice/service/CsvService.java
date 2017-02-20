@@ -5,6 +5,7 @@ import com.steiner.myservice.domain.Review;
 import com.steiner.myservice.domain.Word;
 import com.steiner.myservice.repository.BookRepository;
 import com.steiner.myservice.repository.ReviewRepository;
+import com.steiner.myservice.repository.ReviewVectorRepository;
 import com.steiner.myservice.repository.WordOccurrencesRepository;
 import com.steiner.myservice.repository.WordRepository;
 import java.io.BufferedReader;
@@ -34,12 +35,14 @@ public class CsvService {
     private final ReviewRepository reviewRepository;
     private final BookRepository bookRepository;
     private final WordOccurrencesRepository wordOccurrencesRepository;
+    private final ReviewVectorRepository reviewVectorRepository;
 
     public CsvService(ReviewRepository reviewRepository, BookRepository bookRepository,
-            WordOccurrencesRepository wordOccurrencesRepository) {
+            WordOccurrencesRepository wordOccurrencesRepository,ReviewVectorRepository reviewVectorRepository) {
         this.reviewRepository = reviewRepository;
         this.bookRepository = bookRepository;
         this.wordOccurrencesRepository = wordOccurrencesRepository;
+        this.reviewVectorRepository=reviewVectorRepository;
     }
 
     @Async
@@ -75,7 +78,7 @@ public class CsvService {
                             CreatereviewcsvService createreviewcsvService
                                     = new CreatereviewcsvService(reviewRepository,
                                             wordOccurrencesRepository,
-                                            bookRepository);
+                                            bookRepository,reviewVectorRepository);
                             createreviewcsvService.createreviewcsv(mystring, book);
 
                         }

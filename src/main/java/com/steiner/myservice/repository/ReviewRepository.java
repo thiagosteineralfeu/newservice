@@ -11,5 +11,10 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 public interface ReviewRepository extends JpaRepository<Review,Long> {
+   
+    
+   
 
 }
+
+
